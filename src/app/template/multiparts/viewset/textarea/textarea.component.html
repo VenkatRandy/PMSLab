@@ -1,0 +1,43 @@
+<div *ngIf="type=='outsideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="textAreaRequest">
+              <textarea class="form-control form-control-sm" id="txtArea" rows="5" cols="50"
+                formControlName="level1"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="type=='insideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="tableRequest">
+              <div formArrayName="tableValueListRequests">
+                <div [formGroupName]="rIndex">
+                  <div formArrayName="tableValueRequests">
+                    <div [formGroupName]="vIndex">
+                      <div formGroupName="textAreaRequest">
+                        <textarea class="form-control form-control-sm" id="txtArea" rows="5" cols="50"
+                          formControlName="level1"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

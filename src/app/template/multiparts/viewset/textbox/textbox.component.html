@@ -1,0 +1,43 @@
+<div *ngIf="type=='outsideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="textRequest">
+              <input type="text" class="form-control form-control-sm" id="manufacturer1" name="text1"
+                formControlName="level1" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="type=='insideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="tableRequest">
+              <div formArrayName="tableValueListRequests">
+                <div [formGroupName]="rIndex">
+                  <div formArrayName="tableValueRequests">
+                    <div [formGroupName]="vIndex">
+                      <div formGroupName="textRequest">
+                        <input type="text" class="form-control form-control-sm" id="{{rIndex}}-{{vIndex}}"
+                          name="{{rIndex}}-{{vIndex}}" formControlName="level1" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,232 @@
+<ng-container>
+  <app-alert *ngIf="(status|lowercase)=='success' || (status|lowercase)=='failure'" [status]="statusMessage">
+  </app-alert>
+</ng-container>
+<div class="mt-4">
+  <div class="row">
+    <div class="col-md-3 col-sm-4">
+      <h5>Employee Review</h5>
+    </div>
+    <div class="col-md-3 col-sm-4"></div>
+    <div class="col-md-3 col-sm-4">
+      <div class="m-0 p-0" *ngIf="employeeList?.length>0">
+        <div class="input-group">
+          <input class="form-control form-control-sm py-2 border-right-0 border" type="search" placeholder="Search.."
+            id="example-search-input" [(ngModel)]="searchText">
+          <span class="input-group-append">
+            <div class="input-group-text bg-transparent"><i class="fa fa-xs fa-search"></i></div>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-4">
+      <div *ngIf="_isShown || _isManager">
+        <select class="form-control form-control-sm" (change)="optionChanged($event.target.value)">
+          <option value="initiate" [selected]="selectedType=='initiate'">Review Initiated</option>
+          <option value="review" [selected]="selectedType=='review'">Pending Reviews</option>
+          <option value="fromhr" [selected]="selectedType=='fromhr'">Review Reinitiated</option>
+          <option value="open" [selected]="selectedType=='open'">Submitted</option>
+        </select>
+      </div>
+      <div *ngIf="!_isManager">
+        <select class="form-control form-control-sm" (change)="optionChanged($event.target.value)">
+          <option value="review" [selected]="selectedType=='review'">Pending Reviews</option>
+          <option value="open" [selected]="selectedType=='open'">Submitted</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <hr class="m-0 p-0 mt-2" />
+</div>
+
+<app-tabset (tabnumber)="getTabNumber($event)" [reviewType]="selected"></app-tabset>
+
+<div>
+  <div *ngIf="employeeList?.length==0" class=" alert alert-common text-center align-middle">
+    <strong>No Data Found</strong>
+  </div>
+
+  <div class="table-responsive mb-5" *ngIf="employeeList?.length>0">
+    <table #table class="table  table-sm table-hover table-bordered text-nowrap mb-0">
+      <thead>
+        <th *ngFor="let col of head; let i of index;" class="text-common" (click)="sortFn(col)">
+          <span>{{col}}</span>
+          <span
+            *ngIf="((col|lowercase)=='emp. no.') || ((col|lowercase)=='name') || ((col|lowercase)=='review start date')"><i
+              class="fas fa-sort text-thor ml-2"></i>
+          </span>
+        </th>
+      </thead>
+      <tbody>
+        <tr class="text-dark" *ngFor="let row of employeeList
+        | filter : {
+          userId: searchText,
+          name: searchText,
+          reviewStartDate : searchText,
+          status:searchText
+        }
+        | sortBy  : {
+          property: column,
+          direction: direction
+        }
+        | paginate    : {
+          itemsPerPage: 10,
+          currentPage: p
+        };
+        let i of index;
+        trackBy:trackById">
+          <td>{{row.userId}}</td>
+          <td>{{row.name}}</td>
+          <td>{{row.reviewStartDate | date : 'dd-MMM-yyyy'}}</td>
+          <td>
+            <button type="button" (click)="openModal(row,workflow,chooseTemplate,submitted)"
+              class="btn btn-sm bg-thor text-white mx-1">
+              <span *ngIf="selectedType=='initiate'">Start</span>
+              <span *ngIf="selectedType=='review' || selectedType=='fromhr'">Modify</span>
+              <span *ngIf="selectedType=='open'">View</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="table.rows.length == 0" class="col-12 alert alert-common text-center align-middle">
+      <strong>Search Results Not found!</strong>
+    </div>
+    <div *ngIf="employeeList?.length>10" class="mb-3">
+      <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel="" class="pull-right">
+      </pagination-controls>
+    </div>
+  </div>
+</div>
+
+<!--------------------------------------------------Assign_Workflow------------------------------------------------------->
+<ng-template #workflow>
+  <div class="modal-header">
+    <h5 class="modal-title pull-left">Assign Workflow</h5>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="workflowRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>Do you wish to add more levels for this employee &#63;</p>
+    <button type="button" class="btn bg-thor text-white mx-1" (click)="confirm()">Yes</button>
+    <button type="button" class="btn bg-common text-white mx-1" (click)="decline()">No</button>
+  </div>
+</ng-template>
+<!--------------------------------------------------\. Assign_Workflow------------------------------------------------------>
+
+<!-------------------------------------------------Choose_Template----------------------------------------------------->
+<ng-template #chooseTemplate>
+  <div class="modal-header">
+    <h6 class="modal-title font-weight-bold">{{reviewType}} for <br> {{selectedUser+' - '+selectedUserName}}</h6>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="chooseTemplateRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div *ngIf="templateResponses?.length == 0" class="col-md-12 alert alert-common text-center align-middle mx-3">
+        <strong>Something went wrong.Please try again.</strong>
+      </div>
+      <ng-container #standard>
+        <div *ngIf="templateResponses?.length>0" class="col-md-10 table-responsive mx-2">
+          <p class="font-weight-bold" *ngIf="reviewId==3">Standard Templates</p>
+          <ng-container>
+            <table #table class="table table-sm table-hover table-bordered text-nowrap mb-0">
+              <tbody>
+                <tr class="text-dark" *ngFor="let data of templateResponses;let x=index">
+                  <td *ngIf="data.roleType else head">{{data.roleType}}</td>
+                  <ng-template #head>
+                    <td>Template</td>
+                  </ng-template>
+                  <td>
+                    <button type="button" class="btn btn-sm bg-thor text-white"
+                      (click)="openNestedModal(viewTemplate,x);selectedIndex=x">View</button>
+                  </td>
+                  <td *ngIf="reviewId==3">
+                    <button type="button" class="btn btn-sm bg-thor text-white" (click)="editTemplate(x)">Edit</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </ng-container>
+        </div>
+      </ng-container>
+
+      <ng-container #previous *ngIf="reviewId==3">
+        <div *ngIf="templateResponses?.length>0" class="col-md-10 table-responsive mx-2 mt-2">
+          <p class="font-weight-bold">Previous Year Templates</p>
+          <ng-container>
+            <table #table class="table table-sm table-hover table-bordered text-nowrap mb-0">
+              <tbody>
+                <tr class="text-dark" *ngFor="let data of templateResponses;let x=index">
+                  <td *ngIf="data.roleType else head">{{data.roleType}}</td>
+                  <ng-template #head>
+                    <td>Template</td>
+                  </ng-template>
+                  <td>
+                    <button type="button" class="btn btn-sm bg-thor text-white"
+                      (click)="openNestedModal(viewTemplate,x);selectedIndex=x">View</button>
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-sm bg-thor text-white" (click)="editTemplate(x)">Edit</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </ng-container>
+        </div>
+      </ng-container>
+
+    </div>
+  </div>
+</ng-template>
+<!-------------------------------------------------Choose_Template----------------------------------------------------->
+
+
+<!-------------------------------------------------View_Template----------------------------------------------------->
+<ng-template #viewTemplate>
+  <div class="modal-header">
+    <h5 class="modal-title pull-left font-weight-bold">Template</h5>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="viewTemplateRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="templateResponses[selectedIdx]?.categoryResponses.length==0"
+      class="col-12 alert alert-common text-center align-middle mx-4">
+      <strong>Something went wrong.Please try again.</strong>
+    </div>
+    <div *ngIf="templateResponses[selectedIdx]?.categoryResponses.length>0">
+      <app-viewmode [Payload]="templateResponses[selectedIdx]" [mode]="'viewMode'" [reviewId]="reviewId"></app-viewmode>
+      <button type="button" class="btn btn-sm bg-thor text-white pull-right mx-3 mt-2" *ngIf="reviewId!=3"
+        (click)="modalRef.hide();viewTemplateRef.hide();saveTemplate()">Save</button>
+    </div>
+  </div>
+</ng-template>
+<!-------------------------------------------------View_Template----------------------------------------------------->
+
+<!--------------------------------------------------Submitted------------------------------------------------------->
+<ng-template #submitted>
+  <div class="modal-header">
+    <h5 class="modal-title pull-left">Submitted Review</h5>
+    <div class="pull-right mt-0 ml-2" *ngIf="selectedReviewData">
+      <select class="form-control form-control-sm  mt-0 pt-0" id="role" name="role" [(ngModel)]="selectedRole"
+        (ngModelChange)="calculateRate()">
+        <ng-container *ngFor="let role of roleType">
+          <option [value]="role">
+            {{role}}
+          </option>
+        </ng-container>
+      </select>
+    </div>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="submittedRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <app-template-view [Responses]="selectedReviewData" [reviewId]="reviewId" [selectedRole]="selectedRole">
+    </app-template-view>
+  </div>
+</ng-template>
+<!--------------------------------------------------Submitted------------------------------------------------------->

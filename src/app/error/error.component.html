@@ -1,0 +1,11 @@
+<div class="jumbotron text-common text-center h-100 align-items-middle">
+  <span *ngIf="error==404">
+    <h1>404</h1>
+    <p>Page Not Found</p>
+  </span>
+
+  <span *ngIf="(error==403 || error==undefined || error==null) && error!=404">
+    <h1>403</h1>
+    <p>Access Denied</p>
+  </span>
+</div>

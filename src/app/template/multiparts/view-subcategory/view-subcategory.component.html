@@ -1,0 +1,63 @@
+<section id="contact-list">
+  <div *ngFor="let cat of view; let i=index;trackBy:trackByCategoryFn">
+    <ul class="list-group mt-1" *ngIf="i==index">
+      <div class="card p-0">
+        <div class="card-body">
+          <div *ngFor="let sub of cat.subCategoryRequests; let s=index;trackBy:trackBySubCategoryFn" class="mt-2">
+            <div *ngIf="(sub.type | lowercase) != 'table'">
+              <div class="form-group row">
+                <div class="col-md-4 font-weight-bold">
+                  <p>{{ sub.name }}
+                    <i *ngIf="sub.description && sub.description!=''" class="fas fa-info-circle" triggers=""
+                      #pop="bs-popover" [popover]="sub.description" popoverTitle="Description" [outsideClick]="true"
+                      containerClass="customClass" (click)="open(pop)" placement="right"></i>
+                  </p>
+                </div>
+                <div class="col-md-3" *ngIf="reviewId==3">
+                  <p>{{sub.goal}}</p>
+                </div>
+                <div class="col-md-5" [ngClass]="{'col-md-8':reviewId!=3}">
+                  <div *ngIf="(sub.type | lowercase) == 'text'">
+                    <app-textbox [form]="form" [iIndex]="i" [sIndex]="s" [type]="_outsideTable"></app-textbox>
+                  </div>
+                  <div *ngIf="(sub.type | lowercase) == 'textarea' || (sub.type | lowercase) == 'text area'">
+                    <app-textarea [form]="form" [iIndex]="i" [sIndex]="s" [type]="_outsideTable"></app-textarea>
+                  </div>
+                  <div *ngIf="(sub.type | lowercase) == 'date' || (sub.type | lowercase) == 'datepicker'">
+                    <app-datepicker [form]="form" [iIndex]="i" [sIndex]="s" [type]="_outsideTable"></app-datepicker>
+                  </div>
+                  <div *ngIf="(sub.type | lowercase) == 'dropdown'">
+                    <app-dropdown [form]="form" [iIndex]="i" [sIndex]="s" [type]="_outsideTable"
+                      [values]="sub.dropDownRequest"></app-dropdown>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="(sub.type | lowercase) == 'table'">
+              <div class="form-group row">
+                <div class="col-md-4 font-weight-bold" [ngClass]="{'col-md-9':reviewId!=3}">
+                  <p>{{ sub.name }}
+                    <i *ngIf="sub.description && sub.description!=''" class="fas fa-info-circle" triggers=""
+                      #pop="bs-popover" [popover]="sub.description" popoverTitle="Description" [outsideClick]="true"
+                      containerClass="customClass" (click)="open(pop)" placement="right"></i>
+                  </p>
+                </div>
+                <div class="col-md-8" *ngIf="reviewId==3">
+                  <p>{{sub.goal}}</p>
+                </div>
+              </div>
+              <div class="form-group row">
+                <div class="col-md-12">
+                  <div *ngIf="(sub.type | lowercase) == 'table'">
+                    <app-table [form]="form" [iIndex]="i" [sIndex]="s" [values]="sub.tableRequests" [mode]="mode">
+                    </app-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ul>
+  </div>
+</section>

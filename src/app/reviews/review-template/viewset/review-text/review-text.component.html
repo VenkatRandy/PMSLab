@@ -1,0 +1,115 @@
+<div *ngIf="type=='outsideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="textRequest">
+              <div [ngSwitch]="level">
+                <input *ngSwitchCase="'Reviewee'" type="text" class="form-control form-control-sm"
+                  [ngClass]="{ 'is-invalid': _isSubmitted && textRequestOutside.get('employee').errors}"
+                  id="text-{{iIndex}}-{{sIndex}}" name="text-{{iIndex}}-{{sIndex}}" formControlName="employee"
+                  [readonly]="_isDisabled" />
+                <div *ngIf="_isSubmitted && textRequestOutside.get('employee').errors" class="text-danger">
+                  <div *ngIf="textRequestOutside.get('employee').errors.required">
+                    Required Field
+                  </div>
+                </div>
+                <input *ngSwitchCase="'Reviewer'" type="text" class="form-control form-control-sm"
+                  [ngClass]="{ 'is-invalid': _isSubmitted && textRequestOutside.get('level1').errors}"
+                  id="text-{{iIndex}}-{{sIndex}}" name="text-{{iIndex}}-{{sIndex}}" formControlName="level1"
+                  [readonly]="_isDisabled" />
+                <div *ngIf="_isSubmitted && textRequestOutside.get('level1').errors" class="text-danger">
+                  <div *ngIf="textRequestOutside.get('level1').errors.required">
+                    Required Field
+                  </div>
+                </div>
+                <input *ngSwitchCase="'Appraiser I'" type="text" class="form-control form-control-sm"
+                  [ngClass]="{ 'is-invalid': _isSubmitted && textRequestOutside.get('level2').errors}"
+                  id="text-{{iIndex}}-{{sIndex}}" name="text-{{iIndex}}-{{sIndex}}" formControlName="level2"
+                  [readonly]="_isDisabled" />
+                <div *ngIf="_isSubmitted && textRequestOutside.get('level2').errors" class="text-danger">
+                  <div *ngIf="textRequestOutside.get('level2').errors.required">
+                    Required Field
+                  </div>
+                </div>
+                <input *ngSwitchCase="'Appraiser II'" type="text" class="form-control form-control-sm"
+                  [ngClass]="{ 'is-invalid': _isSubmitted && textRequestOutside.get('level3').errors}"
+                  id="text-{{iIndex}}-{{sIndex}}" name="text-{{iIndex}}-{{sIndex}}" formControlName="level3"
+                  [readonly]="_isDisabled" />
+                <div *ngIf="_isSubmitted && textRequestOutside.get('level3').errors" class="text-danger">
+                  <div *ngIf="textRequestOutside.get('level3').errors.required">
+                    Required Field
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="type=='insideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="tableRequest">
+              <div formArrayName="tableValueListRequests">
+                <div [formGroupName]="rIndex">
+                  <div formArrayName="tableValueRequests">
+                    <div [formGroupName]="vIndex">
+                      <div formGroupName="textRequest">
+                        <div [ngSwitch]="level">
+                          <input *ngSwitchCase="'Reviewee'" type="text" class="form-control form-control-sm"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && textRequestInside.get('employee').errors}"
+                            id="text-{{iIndex}}-{{sIndex}}" name="text-{{iIndex}}-{{sIndex}}" formControlName="employee"
+                            [readonly]="_isDisabled" />
+                          <div *ngIf="_isSubmitted && textRequestInside.get('employee').errors" class="text-danger">
+                            <div *ngIf="textRequestInside.get('employee').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                          <input *ngSwitchCase="'Reviewer'" type="text" class="form-control form-control-sm"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && textRequestInside.get('level1').errors}"
+                            id="text-{{iIndex}}-{{sIndex}}" name="text-{{iIndex}}-{{sIndex}}" formControlName="level1"
+                            [readonly]="_isDisabled" />
+                          <div *ngIf="_isSubmitted && textRequestInside.get('level1').errors" class="text-danger">
+                            <div *ngIf="textRequestInside.get('level1').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                          <input *ngSwitchCase="'Appraiser I'" type="text" class="form-control form-control-sm"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && textRequestInside.get('level2').errors}"
+                            id="text-{{iIndex}}-{{sIndex}}" name="text-{{iIndex}}-{{sIndex}}" formControlName="level2"
+                            [readonly]="_isDisabled" />
+                          <div *ngIf="_isSubmitted && textRequestInside.get('level2').errors" class="text-danger">
+                            <div *ngIf="textRequestInside.get('level2').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                          <input *ngSwitchCase="'Appraiser II'" type="text" class="form-control form-control-sm"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && textRequestInside.get('level3').errors}"
+                            id="text-{{iIndex}}-{{sIndex}}" name="text-{{iIndex}}-{{sIndex}}" formControlName="level3"
+                            [readonly]="_isDisabled" />
+                          <div *ngIf="_isSubmitted && textRequestInside.get('level3').errors" class="text-danger">
+                            <div *ngIf="textRequestInside.get('level3').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

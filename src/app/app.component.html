@@ -1,0 +1,423 @@
+<ngx-spinner bdOpacity="0.9" size="medium" color="#fff" type="ball-pulse-sync" [fullScreen]="true">
+  <!-- <p style="color: white">Loading...</p> -->
+</ngx-spinner>
+
+<ng-container *ngIf="_isShown && !isExtrinsic">
+  <ng-sidebar-container (onBackdropClicked)="_onBackdropClicked()">
+    <ng-sidebar [(opened)]="_opened" [mode]="_MODES[_modeNum]" [keyClose]="_keyClose"
+      [position]="_POSITIONS[_positionNum]" [dock]="_dock" [dockedSize]="'50px'"
+      [autoCollapseHeight]="_autoCollapseHeight" [autoCollapseWidth]="_autoCollapseWidth"
+      [closeOnClickOutside]="_closeOnClickOutside" [closeOnClickBackdrop]="_closeOnClickBackdrop"
+      [showBackdrop]="_showBackdrop" [animate]="_animate" [trapFocus]="_trapFocus" [autoFocus]="_autoFocus"
+      [ariaLabel]="'My sidebar'" (onOpenStart)="_onOpenStart()" (onOpened)="_onOpened()"
+      (onCloseStart)="_onCloseStart()" (onClosed)="_onClosed()" (onTransitionEnd)="_onTransitionEnd()">
+      <span class="p-0">
+        <a href="javascript:void(0);" class="navbar-brand p-0 mr-0">
+          <img src="/assets/encoreLogo.png" width="210px" height="60px" alt="User Image" />
+        </a>
+      </span>
+      <br>
+
+      <ng-scrollbar smoothScroll #scrollable [trackY]="true" [disableOnBreakpoints]="false" [shown]="'hover'"
+        class="pms-scrollbar pb-5">
+        <ul class="list-unstyled components p-3 py-2">
+          <li class="active py-2 px-0" (click)="tabExpandAndCollapse($event)"
+            *ngIf="(_isReviewHistorySelf_Confirmation || _isReviewHistorySelf_MidYear || _isReviewHistorySelf_Annual || _isReviewHistorySelf_Pip) || (_isReviewHistoryReviewees_Confirmation || _isReviewHistoryReviewees_MidYear || _isReviewHistoryReviewees_Annual || _isReviewHistoryReviewees_Pip)">
+            <a class="text-white">
+              <i class="fa fa-history" aria-hidden="true"></i><span class="ml-2" tooltip="Review History"
+                trigger="hover">Review History</span>
+              <div class="float-right">
+                <i [ngClass]="{
+                        'fas fa-caret-down': _isClickedOnInitiationHistory == true,
+                        'fa fa-caret-left': _isClickedOnInitiationHistory == false
+                      }"></i>
+              </div>
+            </a>
+            <div class="ml-3">
+              <ul [ngClass]="{
+                  'collapse list-unstyled show': _isClickedOnInitiationHistory == true,
+                  collapse: _isClickedOnInitiationHistory == false
+                }">
+                <li class="active py-2"
+                  *ngIf="(_isReviewHistorySelf_Confirmation || _isReviewHistorySelf_MidYear || _isReviewHistorySelf_Annual || _isReviewHistorySelf_Pip)">
+                  <a class="text-white">
+                    <i class="fa fa-user" aria-hidden="true"></i><span class="ml-2" tooltip="Self Review History"
+                      trigger="hover">Self</span>
+                    <div class="float-right">
+                      <i [ngClass]="{
+                                  'fas fa-caret-down': _isClickedOnInitiationSelf == true,
+                                  'fa fa-caret-left': _isClickedOnInitiationSelf == false
+                                }"></i>
+                    </div>
+                  </a>
+                  <div class="ml-3">
+                    <ul [ngClass]="{
+                              'collapse list-unstyled show': _isClickedOnInitiationSelf == true,
+                              collapse: _isClickedOnInitiationSelf == false
+                            }" id="pageSubmenu">
+                      <li class="active py-2" *ngIf="_isReviewHistorySelf_Confirmation">
+                        <a [routerLink]="['review-history']" [queryParams]="{self:1,'review_id':'1'}"
+                          routerLinkActive="active" class="text-white  pl-2">
+                          <span tooltip="Confirmation Review" trigger="hover">
+                            <i class="fa fa-angle-right fa-fw"></i>Confirmation
+                          </span>
+                        </a>
+                      </li>
+                      <li class="active py-2" *ngIf="_isReviewHistorySelf_MidYear">
+                        <a [routerLink]="['review-history']" [queryParams]="{self:1,'review_id':'2'}"
+                          routerLinkActive="active" class="text-white  pl-2">
+                          <span tooltip="Mid Year Review" trigger="hover">
+                            <i class="fa fa-angle-right fa-fw"></i>Mid Year
+                          </span>
+                        </a>
+                      </li>
+                      <li class="active py-2" *ngIf="_isReviewHistorySelf_Annual">
+                        <a [routerLink]="['review-history']" [queryParams]="{self:1,'review_id':'3'}"
+                          routerLinkActive="active" class="text-white  pl-2">
+                          <span tooltip="Annual Review" trigger="hover">
+                            <i class="fa fa-angle-right fa-fw"></i>Annual
+                          </span>
+                        </a>
+                      </li>
+                      <li class="active py-2" *ngIf="_isReviewHistorySelf_Pip">
+                        <a [routerLink]="['review-history']" [queryParams]="{self:1,'review_id':'4'}"
+                          routerLinkActive="active" class="text-white  pl-2">
+                          <span tooltip="Performance Improvement Plan" trigger="hover">
+                            <i class="fa fa-angle-right fa-fw"></i>PIP
+                          </span>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+                <li class="active py-2"
+                  *ngIf="(_isReviewHistoryReviewees_Confirmation || _isReviewHistoryReviewees_MidYear || _isReviewHistoryReviewees_Annual || _isReviewHistoryReviewees_Pip)">
+                  <a class="text-white">
+                    <i class="fa fa-users" aria-hidden="true"></i><span class="ml-2" tooltip="Reviewees Review History"
+                      trigger="hover">Reviewees</span>
+                    <div class="float-right">
+                      <i [ngClass]="{
+                                  'fas fa-caret-down': _isClickedOnInitiationReviewees == true,
+                                  'fa fa-caret-left': _isClickedOnInitiationReviewees == false
+                                }"></i>
+                    </div>
+                  </a>
+                  <div class="ml-3">
+                    <ul [ngClass]="{
+                              'collapse list-unstyled show': _isClickedOnInitiationReviewees == true,
+                              collapse: _isClickedOnInitiationReviewees == false
+                            }" id="pageSubmenu">
+                      <li class="active py-2" *ngIf="_isReviewHistoryReviewees_Confirmation">
+                        <a [routerLink]="['review-history']" [queryParams]="{self:0,'review_id':'1'}"
+                          routerLinkActive="active" class="text-white  pl-2">
+                          <span tooltip="Confirmation Review" trigger="hover">
+                            <i class="fas fa-angle-right fa-fw"></i>Confirmation
+                          </span>
+                        </a>
+                      </li>
+                      <li class="active py-2" *ngIf="_isReviewHistoryReviewees_MidYear">
+                        <a [routerLink]="['review-history']" [queryParams]="{self:0,'review_id':'2'}"
+                          routerLinkActive="active" class="text-white  pl-2">
+                          <span tooltip="Mid Year Review" trigger="hover">
+                            <i class="fas fa-angle-right fa-fw"></i>Mid Year
+                          </span>
+                        </a>
+                      </li>
+                      <li class="active py-2" *ngIf="_isReviewHistoryReviewees_Annual">
+                        <a [routerLink]="['review-history']" [queryParams]="{self:0,'review_id':'3'}"
+                          routerLinkActive="active" class="text-white  pl-2">
+                          <span tooltip="Annual Review" trigger="hover">
+                            <i class="fas fa-angle-right fa-fw"></i>Annual
+                          </span>
+                        </a>
+                      </li>
+                      <li class="active py-2" *ngIf="_isReviewHistoryReviewees_Pip">
+                        <a [routerLink]="['review-history']" [queryParams]="{self:0,'review_id':'4'}"
+                          routerLinkActive="active" class="text-white  pl-2">
+                          <span tooltip="Performance Improvement Plan" trigger="hover">
+                            <i class="fas fa-angle-right fa-fw"></i>PIP
+                          </span>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+          <li *ngIf="_isReviewInitiation">
+            <a [routerLink]="['initiation','review']" routerLinkActive="active" class="text-white">
+          <li class="py-1">
+            <div class="text-white">
+              <i class="fas fa-star-half-alt"></i><span class="text-wrap text-truncate mt-5 ml-2"
+                tooltip="Review Initiation" trigger="hover">Review Initiation</span>
+            </div>
+          </li>
+          </a>
+          </li>
+
+          <li class="active py-2 px-0" *ngIf="_reviewRelease">
+            <a routerLink="/review/release" class="text-white">
+              <i class="fas fa-share-square"></i><span class="ml-2" tooltip="Review Release" trigger="hover">Review
+                Release</span>
+            </a>
+          </li>
+
+          <li class="active py-2 px-0" *ngIf="_isMyReview">
+            <a routerLink="/review/self" class="text-white">
+              <i class="fas fa-hand-pointer"></i><span class="ml-2" tooltip="My Review" trigger="hover">My Review</span>
+            </a>
+          </li>
+
+          <li class="active py-2 px-0" *ngIf="_isEmployeeReview">
+            <a routerLink="/review/employee" class="text-white">
+              <i class="fas fa-fingerprint"></i><span class="ml-2" tooltip="Employee Review" trigger="hover">Employee
+                Review</span>
+            </a>
+          </li>
+
+          <li class="active py-2 px-0" *ngIf="_workflow">
+            <a routerLink="/workflow" class="text-white">
+              <i class="fas fa-layer-group"></i><span class="ml-2" tooltip="User Workflow" trigger="hover">User
+                Workflow</span>
+            </a>
+          </li>
+
+          <li class="active py-2 px-0" (click)="tabExpandAndCollapse($event)"
+            *ngIf="(_isReviewLogs_Confirmation || _isReviewLogs_MidYear || _isReviewLogs_Annual || _isReviewLogs_Pip)">
+            <a class="text-white">
+              <i class="fas fa-history"></i><span class="ml-2" tooltip="Review Logs" trigger="hover"
+                style="cursor:pointer;">Review
+                Logs</span>
+              <div class="float-right">
+                <i [ngClass]="{
+                            'fas fa-caret-down': _reviewLogs == true,
+                            'fa fa-caret-left': _reviewLogs == false
+                          }"></i>
+              </div>
+            </a>
+
+            <div class="ml-3">
+              <ul [ngClass]="{
+                      'collapse list-unstyled show': _reviewLogs == true,
+                      collapse: _reviewLogs == false
+                    }" id="pageSubmenu">
+                <li class="active py-2" *ngIf="_isReviewLogs_Confirmation">
+                  <a [routerLink]="['review-logs']" [queryParams]="{'review_id':'1'}" routerLinkActive="active"
+                    class="text-white  pl-2">
+                    <span tooltip="Confirmation Review" trigger="hover">
+                      <i class="fas fa-angle-right fa-fw"></i>Confirmation
+                    </span>
+                  </a>
+                </li>
+                <li class="active py-2" *ngIf="_isReviewLogs_MidYear">
+                  <a [routerLink]="['review-logs']" [queryParams]="{'review_id':'2'}" routerLinkActive="active"
+                    class="text-white  pl-2">
+                    <span tooltip="Mid Year Review" trigger="hover">
+                      <i class="fas fa-angle-right fa-fw"></i>Mid Year
+                    </span>
+                  </a>
+                </li>
+                <li class="active py-2" *ngIf="_isReviewLogs_Annual">
+                  <a [routerLink]="['review-logs']" [queryParams]="{'review_id':'3'}" routerLinkActive="active"
+                    class="text-white  pl-2">
+                    <span tooltip="Annual Review" trigger="hover">
+                      <i class="fas fa-angle-right fa-fw"></i>Annual
+                    </span>
+                  </a>
+                </li>
+                <li class="active py-2" *ngIf="_isReviewLogs_Pip">
+                  <a [routerLink]="['review-logs']" [queryParams]="{'review_id':'4'}" routerLinkActive="active"
+                    class="text-white  pl-2">
+                    <span tooltip="Performance Improvement Plan" trigger="hover">
+                      <i class="fas fa-angle-right fa-fw"></i>PIP
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+
+
+
+          <li class="active py-2 px-0" (click)="tabExpandAndCollapse($event)"
+            *ngIf="(_isReviewRevoke_Confirmation || _isReviewRevoke_MidYear || _isReviewRevoke_Annual || _isReviewRevoke_Pip)">
+            <a class="text-white">
+              <i class="fa fa-reply" aria-hidden="true"></i><span class="ml-2" tooltip="Review Revoke" trigger="hover"
+                style="cursor:pointer;">Review
+                Revoke</span>
+              <div class="float-right">
+                <i [ngClass]="{
+                            'fas fa-caret-down': _reviewRevoke == true,
+                            'fa fa-caret-left': _reviewRevoke == false
+                          }"></i>
+              </div>
+            </a>
+
+            <div class="ml-3">
+              <ul [ngClass]="{
+                      'collapse list-unstyled show': _reviewRevoke == true,
+                      collapse: _reviewRevoke == false
+                    }" id="pageSubmenu">
+                <li class="active py-2" *ngIf="_isReviewRevoke_Confirmation">
+                  <a [routerLink]="['revoke']" [queryParams]="{'review_id':'1'}" routerLinkActive="active"
+                    class="text-white  pl-2">
+                    <span tooltip="Confirmation Review" trigger="hover">
+                      <i class="fas fa-angle-right fa-fw"></i>Confirmation
+                    </span>
+                  </a>
+                </li>
+                <li class="active py-2" *ngIf="_isReviewRevoke_MidYear">
+                  <a [routerLink]="['revoke']" [queryParams]="{'review_id':'2'}" routerLinkActive="active"
+                    class="text-white  pl-2">
+                    <span tooltip="Mid Year Review" trigger="hover">
+                      <i class="fas fa-angle-right fa-fw"></i>Mid Year
+                    </span>
+                  </a>
+                </li>
+                <li class="active py-2" *ngIf="_isReviewRevoke_Annual">
+                  <a [routerLink]="['revoke']" [queryParams]="{'review_id':'3'}" routerLinkActive="active"
+                    class="text-white  pl-2">
+                    <span tooltip="Annual Review" trigger="hover">
+                      <i class="fas fa-angle-right fa-fw"></i>Annual
+                    </span>
+                  </a>
+                </li>
+                <li class="active py-2" *ngIf="_isReviewRevoke_Pip">
+                  <a [routerLink]="['revoke']" [queryParams]="{'review_id':'4'}" routerLinkActive="active"
+                    class="text-white  pl-2">
+                    <span tooltip="Performance Improvement Plan" trigger="hover">
+                      <i class="fas fa-angle-right fa-fw"></i>PIP
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+          <li class="active py-2 px-0" (click)="tabExpandAndCollapse($event)"
+            *ngIf="(_reviewViewUpdate_Confirmation || _reviewViewUpdate_MidYear || _reviewViewUpdate_Annual || _reviewViewUpdate_Pip)">
+            <a class="text-white">
+              <i class="fa fa-eye" aria-hidden="true"></i><span class="ml-2" tooltip="All Review" trigger="hover"
+                style="cursor:pointer;">All Review
+              </span>
+              <div class="float-right">
+                <i [ngClass]="{
+                          'fas fa-caret-down': _reviewViewUpdate == true,
+                          'fa fa-caret-left': _reviewViewUpdate == false
+                        }"></i>
+              </div>
+            </a>
+
+            <div class="ml-3">
+              <ul [ngClass]="{
+                    'collapse list-unstyled show': _reviewViewUpdate == true,
+                    collapse: _reviewViewUpdate == false
+                  }" id="pageSubmenu">
+                <li class="active py-2" *ngIf="_reviewViewUpdate_Confirmation">
+                  <a [routerLink]="['allreviews']" [queryParams]="{'review_id':'1'}" routerLinkActive="active"
+                    class="text-white  pl-2">
+                    <span tooltip="Confirmation Review" trigger="hover">
+                      <i class="fas fa-angle-right fa-fw"></i>Confirmation
+                    </span>
+                  </a>
+                </li>
+                <li class="active py-2" *ngIf="_reviewViewUpdate_MidYear">
+                  <a [routerLink]="['allreviews']" [queryParams]="{'review_id':'2'}" routerLinkActive="active"
+                    class="text-white  pl-2">
+                    <span tooltip="Mid Year Review" trigger="hover">
+                      <i class="fas fa-angle-right fa-fw"></i>Mid Year
+                    </span>
+                  </a>
+                </li>
+                <li class="active py-2" *ngIf="_reviewViewUpdate_Annual">
+                  <a [routerLink]="['allreviews']" [queryParams]="{'review_id':'3'}" routerLinkActive="active"
+                    class="text-white  pl-2">
+                    <span tooltip="Annual Review" trigger="hover">
+                      <i class="fas fa-angle-right fa-fw"></i>Annual
+                    </span>
+                  </a>
+                </li>
+                <li class="active py-2" *ngIf="_reviewViewUpdate_Pip">
+                  <a [routerLink]="['allreviews']" [queryParams]="{'review_id':'4'}" routerLinkActive="active"
+                    class="text-white  pl-2">
+                    <span tooltip="Performance Improvement Plan" trigger="hover">
+                      <i class="fas fa-angle-right fa-fw"></i>PIP
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+          <!-- <li class="active py-2 px-0" *ngIf="_initiate"> -->
+          <!-- <li class="active py-2 px-0">
+          <a [routerLink]="['/initiation/process']" class="text-white">
+            <i class="fas fa-microchip"></i><span class="ml-2">Process Initiation</span>
+          </a>
+        </li> -->
+
+          <!-- <li class="active py-2 px-0" *ngIf="_reports">
+          <a [routerLink]="['/test']" class="text-white">
+            <i class="fas fa-file-excel"></i><span class="ml-2">Reports</span>
+          </a>
+        </li> -->
+        </ul>
+      </ng-scrollbar>
+    </ng-sidebar>
+
+    <div ng-sidebar-content>
+      <header class="demo-header p-3 text-thor sticky-top">
+        <div>
+          <i (click)="_toggleOpened()" class="fas fa-bars fa-2x text-thor"></i>
+        </div>
+
+        <span *ngIf="profileImage" style="text-decoration: none" id="name" [popover]="popTemplate" [outsideClick]="true"
+          placement="bottom">
+          <img src="{{profileImage}}" width="35px" height="35px" class="img-fluid rounded-circle mr-2" alt="Img" />
+          <span *ngIf="!_isMobileView">{{fullName}}</span>
+        </span>
+
+        <ng-template #popTemplate>
+          <div class="m-0 p-0" [innerHtml]="html" (click)="logout('logout')"></div>
+        </ng-template>
+
+        <span *ngIf="!profileImage" style="text-decoration: none" class="bg-common" id="name">
+          <img src="/assets/user.png" width="35px" height="35px" class="img-fluid rounded-circle mr-2" alt="Img" />
+        </span>
+
+      </header>
+
+      <div class="mx-4">
+        <router-outlet></router-outlet>
+      </div>
+
+      <section class="demo-contents mt-5">
+        <nav class="navbar navbar-header bg-footer mt-5 fixed-bottom p-0">
+          <div class="navbar-expand m-auto navbar-text text-dark">
+            &copy; &nbsp;2019 Encore Software Services,Inc. All rights reserved.
+          </div>
+        </nav>
+      </section>
+    </div>
+  </ng-sidebar-container>
+</ng-container>
+
+
+<div *ngIf="_isIsolated && !isExtrinsic">
+  <div *ngIf="_isLoginPage && !(_isLogoutPage && _isErrorPage)">
+    <app-login></app-login>
+  </div>
+  <div *ngIf="_isLogoutPage && !(_isLoginPage && _isErrorPage)">
+    <app-logout></app-logout>
+  </div>
+  <div *ngIf="_isErrorPage && !(_isLoginPage && _isLogoutPage)">
+    <app-error></app-error>
+  </div>
+</div>
+
+<div *ngIf="isExtrinsic">
+  <app-extrinsic></app-extrinsic>
+</div>

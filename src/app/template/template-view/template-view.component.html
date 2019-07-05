@@ -1,0 +1,303 @@
+<div class="my-1">
+  <div class="row mx-0" *ngIf="_isTemplateAvailable">
+    <div class="col-12 mt-2">
+      <accordion [closeOthers]="true">
+        <accordion-group *ngFor="let accordian of accordianList; let idx = index;trackBy:trackByAcc"
+          [heading]="accordian.title" [isOpen]="idx==0" (isOpenChange)="log($event)">
+          <div *ngIf="(!accordian?.rejected) && (reviewId==3)" class="pull-right" accordion-heading>
+            <p id="weight" class="pl-1 pull-right">{{weightage[idx]?.value}}</p>
+            <label for="weight" class="font-weight-bold pull-right">Weightage : </label>
+          </div>
+          <section id="contact-list">
+            <div *ngFor="let cat of Requests.categoryRequests; let i=index;trackBy:trackByCat">
+              <ul class="list-group mt-1" *ngIf="idx==i">
+                <li class="list-group-item bg-light">
+                  <p>
+                    <span class="font-weight-bold text-viewall">Key Performance Indicators</span>
+                    <span *ngIf="cat.weightageAgainstKRA">
+                      <span class="pull-right">
+                        <div [ngSwitch]="selectedRole">
+                          <input *ngSwitchCase="'Reviewee'" type="text"
+                            class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                            [attr.disabled]="true" placeholder="KRA Weightage" [ngModel]="cat.textRequest.employee"
+                            id="weight-{{i}}" />
+                          <input *ngSwitchCase="'Reviewer'" type="text"
+                            class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                            [attr.disabled]="true" placeholder="KRA Weightage" [ngModel]="cat.textRequest.level1"
+                            id="weight-{{i}}" />
+                          <input *ngSwitchCase="'Appraiser I'" type="text"
+                            class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                            [attr.disabled]="true" placeholder="KRA Weightage" [ngModel]="cat.textRequest.level2"
+                            id="weight-{{i}}" />
+                          <input *ngSwitchCase="'Appraiser II'" type="text"
+                            class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                            [attr.disabled]="true" placeholder="KRA Weightage" [ngModel]="cat.textRequest.level3"
+                            id="weight-{{i}}" />
+                        </div>
+                      </span>
+                      <span class="font-weight-bold text-viewall pull-right"><label>KRA Weightage : </label></span>
+                    </span>
+                  </p>
+                  <div class="card p-0">
+                    <div class="card-body">
+                      <div *ngFor="let sub of cat.subCategoryRequests; let s=index;trackBy:trackBySub" class="mt-2">
+                        <div *ngIf="(sub.type | lowercase) != 'table'">
+                          <div class="form-group row">
+                            <div class="col-md-3 font-weight-bold"
+                              [ngClass]="{'col-md-6 font-weight-bold': reviewId!=3}">
+                              <p>{{ sub.name }}
+                                <i *ngIf="sub.description && sub.description!=''" class="fas fa-info-circle" triggers=""
+                                  #pop="bs-popover" [popover]="sub.description" popoverTitle="Description"
+                                  [outsideClick]="true" containerClass="customClass" (click)="open(pop)"
+                                  placement="right"></i>
+                              </p>
+                            </div>
+                            <div class="col-md-3" *ngIf="reviewId==3">
+                              <p>{{sub.goal}}</p>
+                            </div>
+                            <div class="col-md-6">
+                              <div *ngIf="(sub.type | lowercase) == 'text'">
+                                <div [ngSwitch]="selectedRole">
+                                  <input *ngSwitchCase="'Reviewee'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}" [ngModel]="sub.textRequest.employee"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Reviewer'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}" [ngModel]="sub.textRequest.level1"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser I'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}" [ngModel]="sub.textRequest.level2"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser II'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}" [ngModel]="sub.textRequest.level3"
+                                    [attr.disabled]="true" />
+                                </div>
+                              </div>
+                              <div
+                                *ngIf="(sub.type | lowercase) == 'textarea' || (sub.type | lowercase) == 'text area'">
+                                <div [ngSwitch]="selectedRole">
+                                  <textarea *ngSwitchCase="'Reviewee'" class="form-control form-control-sm" id="txtArea"
+                                    rows="5" cols="50" [ngModel]="sub.textAreaRequest.employee"
+                                    [attr.disabled]="true"></textarea>
+                                  <textarea *ngSwitchCase="'Reviewer'" class="form-control form-control-sm" id="txtArea"
+                                    rows="5" cols="50" [ngModel]="sub.textAreaRequest.level1"
+                                    [attr.disabled]="true"></textarea>
+                                  <textarea *ngSwitchCase="'Appraiser I'" class="form-control form-control-sm"
+                                    id="txtArea" rows="5" cols="50" [ngModel]="sub.textAreaRequest.level2"
+                                    [attr.disabled]="true"></textarea>
+                                  <textarea *ngSwitchCase="'Appraiser II'" class="form-control form-control-sm"
+                                    id="txtArea" rows="5" cols="50" [ngModel]="sub.textAreaRequest.level3"
+                                    [attr.disabled]="true"></textarea>
+                                </div>
+                              </div>
+                              <div *ngIf="(sub.type | lowercase) == 'date'">
+                                <div [ngSwitch]="selectedRole">
+                                  <input *ngSwitchCase="'Reviewee'" type="text" class="form-control form-control-sm"
+                                    id="date-{{i}}-{{s}}" name="date-{{i}}-{{s}}"
+                                    [ngModel]="sub.dateRequest.employee | date:'dd-MMM-yyyy'" [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Reviewer'" type="text" class="form-control form-control-sm"
+                                    id="date-{{i}}-{{s}}" name="date-{{i}}-{{s}}"
+                                    [ngModel]="sub.dateRequest.level1 | date:'dd-MMM-yyyy'" [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser I'" type="text" class="form-control form-control-sm"
+                                    id="date-{{i}}-{{s}}" name="date-{{i}}-{{s}}"
+                                    [ngModel]="sub.dateRequest.level2 | date:'dd-MMM-yyyy'" [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser II'" type="text" class="form-control form-control-sm"
+                                    id="date-{{i}}-{{s}}" name="date-{{i}}-{{s}}"
+                                    [ngModel]="sub.dateRequest.level3 | date:'dd-MMM-yyyy'" [attr.disabled]="true" />
+                                </div>
+                              </div>
+                              <div *ngIf="(sub.type | lowercase) == 'dropdown'">
+                                <div [ngSwitch]="selectedRole">
+                                  <input *ngSwitchCase="'Reviewee'" type="text" class="form-control form-control-sm"
+                                    id="drop-{{i}}-{{s}}" name="drop-{{i}}-{{s}}"
+                                    [ngModel]="sub.dropDownRequest.dropDownSelectedRequest.employee"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Reviewer'" type="text" class="form-control form-control-sm"
+                                    id="drop-{{i}}-{{s}}" name="drop-{{i}}-{{s}}"
+                                    [ngModel]="sub.dropDownRequest.dropDownSelectedRequest.level1"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser I'" type="text" class="form-control form-control-sm"
+                                    id="drop-{{i}}-{{s}}" name="drop-{{i}}-{{s}}"
+                                    [ngModel]="sub.dropDownRequest.dropDownSelectedRequest.level2"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser II'" type="text" class="form-control form-control-sm"
+                                    id="drop-{{i}}-{{s}}" name="drop-{{i}}-{{s}}"
+                                    [ngModel]="sub.dropDownRequest.dropDownSelectedRequest.level3"
+                                    [attr.disabled]="true" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div *ngIf="(sub.type | lowercase) == 'table'">
+                          <div class="form-group row">
+                            <div class="col-md-4 font-weight-bold"
+                              [ngClass]="{'col-md-8 font-weight-bold':reviewId!=3}">
+                              <p>{{ sub.name }}
+                                <i *ngIf="sub.description && sub.description!=''" class="fas fa-info-circle" triggers=""
+                                  #pop="bs-popover" [popover]="sub.description" popoverTitle="Description"
+                                  [outsideClick]="true" containerClass="customClass" (click)="open(pop)"
+                                  placement="right"></i>
+                              </p>
+                            </div>
+                            <div class="col-md-8" *ngIf="reviewId==3">
+                              <p>{{sub.goal}}</p>
+                            </div>
+                          </div>
+                          <div class="form-group row">
+                            <div class="col-md-12">
+                              <div *ngIf="(sub.type | lowercase) == 'table'">
+                                <div class="container-fluid px-0">
+                                  <div id="table" class="table-responsive">
+                                    <table class="table table-stripped table-bordered">
+                                      <thead>
+                                        <th
+                                          *ngFor="let row of getTableColumns(cat.weightageAgainstKRA,sub.tableRequest); let id = index;trackBy:trackByTH">
+                                          <span class="font-italic" [tooltip]="row.description"
+                                            trigger="hover">{{row.columnName}}</span>
+                                        </th>
+                                      </thead>
+                                      <ng-container
+                                        *ngFor="let rows of sub.tableRequest.tableValueListRequests; let rIdx = index; trackBy: trackByFnRows">
+                                        <tr>
+                                          <td class="mw-25"
+                                            *ngFor="let values of getTableValueRequests(cat.weightageAgainstKRA,sub.tableRequest,rows); let vIdx = index; trackBy: trackByFnCols">
+                                            <span *ngIf="(((values.type | lowercase)=='text'))">
+                                              <div [ngSwitch]="selectedRole">
+                                                <input *ngSwitchCase="'Reviewee'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}" [ngModel]="values.textRequest.employee"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Reviewer'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}" [ngModel]="values.textRequest.level1"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser I'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}" [ngModel]="values.textRequest.level2"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser II'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}" [ngModel]="values.textRequest.level3"
+                                                  [attr.disabled]="true" />
+                                              </div>
+                                            </span>
+                                            <span *ngIf="(values.type | lowercase)=='textarea'">
+                                              <div [ngSwitch]="selectedRole">
+                                                <textarea *ngSwitchCase="'Reviewee'" type="text"
+                                                  class="form-control form-control-sm" id="textarea-{{i}}-{{s}}"
+                                                  rows="5" cols="50" name="textarea-{{i}}-{{s}}"
+                                                  [ngModel]="values.textAreaRequest.employee"
+                                                  [attr.disabled]="true"> </textarea>
+                                                <textarea *ngSwitchCase="'Reviewer'" type="text"
+                                                  class="form-control form-control-sm" id="textarea-{{i}}-{{s}}"
+                                                  rows="5" cols="50" name="textarea-{{i}}-{{s}}"
+                                                  [ngModel]="values.textAreaRequest.level1"
+                                                  [attr.disabled]="true"> </textarea>
+                                                <textarea *ngSwitchCase="'Appraiser I'" type="text"
+                                                  class="form-control form-control-sm" id="textarea-{{i}}-{{s}}"
+                                                  rows="5" cols="50" name="textarea-{{i}}-{{s}}"
+                                                  [ngModel]="values.textAreaRequest.level2"
+                                                  [attr.disabled]="true"> </textarea>
+                                                <textarea *ngSwitchCase="'Appraiser II'" type="text"
+                                                  class="form-control form-control-sm" id="textarea-{{i}}-{{s}}"
+                                                  rows="5" cols="50" name="textarea-{{i}}-{{s}}"
+                                                  [ngModel]="values.textAreaRequest.level3"
+                                                  [attr.disabled]="true"> </textarea>
+                                              </div>
+                                            </span>
+                                            <span *ngIf="(values.type | lowercase)=='date'">
+                                              <div [ngSwitch]="selectedRole">
+                                                <input *ngSwitchCase="'Reviewee'" type="text"
+                                                  class="form-control form-control-sm" id="date-{{i}}-{{s}}"
+                                                  name="date-{{i}}-{{s}}"
+                                                  [ngModel]="values.dateRequest.employee | date:'dd-MMM-yyyy'"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Reviewer'" type="text"
+                                                  class="form-control form-control-sm" id="date-{{i}}-{{s}}"
+                                                  name="date-{{i}}-{{s}}"
+                                                  [ngModel]="values.dateRequest.level1 | date:'dd-MMM-yyyy'"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser I'" type="text"
+                                                  class="form-control form-control-sm" id="date-{{i}}-{{s}}"
+                                                  name="date-{{i}}-{{s}}"
+                                                  [ngModel]="values.dateRequest.level2 | date:'dd-MMM-yyyy'"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser II'" type="text"
+                                                  class="form-control form-control-sm" id="date-{{i}}-{{s}}"
+                                                  name="date-{{i}}-{{s}}"
+                                                  [ngModel]="values.dateRequest.level3 | date:'dd-MMM-yyyy'"
+                                                  [attr.disabled]="true" />
+                                              </div>
+                                            </span>
+                                            <span *ngIf="(values.type | lowercase) == 'dropdown'">
+                                              <div [ngSwitch]="selectedRole">
+                                                <input *ngSwitchCase="'Reviewee'" type="text"
+                                                  class="form-control form-control-sm" id="tdrop-{{i}}-{{s}}"
+                                                  name="tdrop-{{i}}-{{s}}"
+                                                  [ngModel]="values.dropDownSelectedRequest.employee"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Reviewer'" type="text"
+                                                  class="form-control form-control-sm" id="tdrop-{{i}}-{{s}}"
+                                                  name="tdrop-{{i}}-{{s}}"
+                                                  [ngModel]="values.dropDownSelectedRequest.level1"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser I'" type="text"
+                                                  class="form-control form-control-sm" id="tdrop-{{i}}-{{s}}"
+                                                  name="tdrop-{{i}}-{{s}}"
+                                                  [ngModel]="values.dropDownSelectedRequest.level2"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser II'" type="text"
+                                                  class="form-control form-control-sm" id="tdrop-{{i}}-{{s}}"
+                                                  name="tdrop-{{i}}-{{s}}"
+                                                  [ngModel]="values.dropDownSelectedRequest.level3"
+                                                  [attr.disabled]="true" />
+                                              </div>
+                                            </span>
+                                          </td>
+                                        </tr>
+                                      </ng-container>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </accordion-group>
+      </accordion>
+
+      <ng-container *ngIf="_isTemplateAvailable && ((reviewId==3) || (reviewId==1))">
+        <div class="row mt-3 mx-0">
+          <div class="col-1 px-0">
+            <label class="font-weight-bold">Rating : </label>
+          </div>
+          <div class="col-11">
+            {{rate}} -
+            <b *ngIf="level">
+              <span *ngIf="level=='Outstanding'" class="text-success">{{level}}</span>
+              <span *ngIf="level=='Exceed Expectations'" class="text-primary">{{level}}</span>
+              <span *ngIf="level=='Meets Expectations'" class="text-warning">{{level}}</span>
+              <span *ngIf="level=='Below Expectations'" class="text-danger">{{level}}</span>
+            </b>
+            <b *ngIf="!level">{{rate}}</b>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="row mx-0" *ngIf="!_isTemplateAvailable">
+    <div class="col-12 justify-content-center">
+      <div class="alert alert-common" role="alert">
+        Something went wrong. Please Try again.
+      </div>
+    </div>
+  </div>
+</div>

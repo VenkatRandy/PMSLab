@@ -1,0 +1,53 @@
+<div *ngIf="type=='outsideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="dropDownRequest">
+              <div formGroupName="dropDownSelectedRequest">
+                <select class="form-control" id="type" name="type" formControlName="level1">
+                  <option value="" selected disabled>Select</option>
+                  <option [value]="opt.value" [selected]="selectedValueOutside() == opt.value"
+                    *ngFor="let opt of values.dropDownDefaultRequests">{{opt.value}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="type=='insideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="tableRequest">
+              <div formArrayName="tableValueListRequests">
+                <div [formGroupName]="rIndex">
+                  <div formArrayName="tableValueRequests">
+                    <div [formGroupName]="vIndex">
+                      <div formGroupName="dropDownSelectedRequest">
+                        <select class="form-control" id="type-{{rIndex}}-{{vIndex}}" name="type-{{rIndex}}-{{vIndex}}"
+                          formControlName="level1">
+                          <option [value]="" selected disabled>Select</option>
+                          <option [value]="opt.value" [selected]="selectedValueInside() == opt.value"
+                            *ngFor="let opt of values; trackBy: trackByFnOpts">{{opt.value}}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

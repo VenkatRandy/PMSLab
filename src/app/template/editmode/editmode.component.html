@@ -1,0 +1,294 @@
+<div class="mt-4 mx-2">
+  <div class="row">
+    <div class="col-6">
+      <h5>Edit Template</h5>
+    </div>
+  </div>
+  <hr class="m-0 p-0" />
+</div>
+
+<div *ngIf="status=='success'" class="alert alert-success mt-1 mb-2 mx-3">
+  <strong>Success!</strong>
+</div>
+
+<div *ngIf="status=='failure'" class="alert alert-danger mt-1 mb-2 mx-3">
+  <strong>Failure!</strong>
+</div>
+
+<div *ngIf="form?.get('categoryRequests')['controls']?.length==0" class="alert alert-info" role="alert">
+  <strong>Something went wrong. Please Try again.</strong>
+</div>
+
+<!----------------------------ACCORDIAN----------------------------->
+<div class="row mx-0">
+  <div class="col-12">
+    <accordion [closeOthers]="true">
+      <accordion-group *ngFor="let create of createList; let idx = index" [heading]="create.title" [isOpen]="idx==0">
+        <button class="btn btn-sm btn bg-common text-white float-right pull-right" tooltip="Edit" trigger="hover"
+          accordion-heading (click)="editModal(template,idx);$event.stopPropagation(); false;">
+          <i class="fas fa-edit text-white"></i>
+        </button>
+        <fieldset disabled="disabled">
+          <app-view-subcategory [form]="form" [index]="idx" [mode]="'editmode'"></app-view-subcategory>
+        </fieldset>
+      </accordion-group>
+      <div *ngIf="form.get('categoryRequests')['controls'].length>0">
+        <button type="submit" class="btn bg-common text-white pull-right my-4" (click)="onSubmit()" tooltip="Save"
+          trigger="hover" [disabled]="submitted">Save</button>
+      </div>
+      <div *ngIf="form.get('categoryRequests')['controls'].length>0">
+        <button type="submit" class="btn bg-common text-white pull-right my-4 mr-2" (click)="reset()" tooltip="Reset"
+          trigger="hover" [disabled]="submitted">Reset</button>
+      </div>
+    </accordion>
+  </div>
+</div>
+<!----------------------------\.ACCORDIAN----------------------------->
+
+<!----------------------------MODAL----------------------------->
+<ng-template #template>
+  <form [formGroup]="form" novalidate>
+    <div formArrayName="categoryRequests">
+      <div *ngFor="let item of getCategoryRequests(form.controls); let z = index">
+        <div formGroupName={{z}}>
+          <div
+            *ngIf="(_isEditMode && z==showIndex ) || (getCategoryRequests(form.controls).length-1 == z && _isAddMode)">
+            <div class="modal-header">
+              <h4 class="modal-title text-common pull-left">Edit Template</h4>
+              <button type="button" class="close pull-right" (click)="clear(z)">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="category" class="text-common font-weight-bold">Category: <span
+                    class="text-danger">*</span></label>
+                <input type="text" maxlength=250 autofocus class="form-control form-control-sm" id="catname"
+                  formControlName="name" [ngClass]="{ 'is-invalid': submitted && item.controls.name.errors}">
+                <div *ngIf="submitted && item.controls.name.errors" class="pull-right text-danger">
+                  <div *ngIf="item.controls.name.errors.required">Category is required
+                  </div>
+                </div>
+              </div>
+              <div class="form-group" formArrayName="subCategoryRequests">
+                <div *ngFor="let sub of getSubcategory(item,z); let i = index">
+                  <label class="text-common font-weight-bold">Sub Category: <span class="text-danger">*
+                      <button type="button" class="btn btn-sm bg-common text-white m-1" tooltip="Show/Hide"
+                        trigger='hover' (click)="_isCollapsed[z][i] = !_isCollapsed[z][i]"
+                        [attr.aria-expanded]="!_isCollapsed[z][i]" aria-controls="collapseBasic">
+                        <span>
+                          <span> <i class="far fa-eye-slash"></i> </span>
+                        </span>
+                      </button>
+                    </span></label>
+                  <div [formGroupName]="i" id="collapseBasic" [collapse]="_isCollapsed[z][i]">
+                    <div class="row m-1">
+                      <div class="col-3 pr-0">
+                        <input type="text" maxlength=250 class="form-control form-control-sm" id="subName"
+                          placeholder="Name" formControlName="name"
+                          [ngClass]="{ 'is-invalid': submitted && sub.controls.name.errors}">
+                        <div *ngIf="submitted && sub.controls.name.errors" class="pull-right text-danger">
+                          <div *ngIf="sub.controls.name.errors.required">Subcategory is required
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-4 pr-0">
+                        <input type="text" maxlength=250 class="form-control form-control-sm" id="subDescription"
+                          placeholder="Description"
+                          [ngClass]="{ 'is-invalid': submitted && sub.controls.description.errors}"
+                          formControlName="description">
+                        <div *ngIf="submitted && sub.controls.description.errors" class="pull-right text-danger">
+                          <div *ngIf="sub.controls.description.errors.required">Description is required
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-3 pr-0">
+                        <select class="form-control form-control-sm" id="subType" name="type"
+                          [ngClass]="{ 'is-invalid': submitted && sub.controls.type.errors}"
+                          (change)="dropDownChanged($event.target.value,i,sub,z)" formControlName="type">
+                          <option value="" selected disabled>Select</option>
+                          <option value="text" [selected]="selectedValueOutside(z,i) == 'text'">Textbox</option>
+                          <option value="textarea" [selected]="selectedValueOutside(z,i) == 'textarea'">Text Area
+                          </option>
+                          <option value="dropdown" [selected]="selectedValueOutside(z,i) == 'dropdown'"
+                            *ngIf="tabNumber!=2 && tabNumber!=4">Dropdown</option>
+                          <option value="table" [selected]="selectedValueOutside(z,i) == 'table'">Table</option>
+                        </select>
+                        <div *ngIf="submitted && sub.controls.type.errors" class="pull-right text-danger">
+                          <div *ngIf="sub.controls.type.errors.required">Type is required
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-2 pr-0">
+                        <button *ngIf="((getSubcategory(item,z).length==(i+1)) && (getSubcategory(item,z).length<100))"
+                          type="button" class="btn btn-sm bg-common text-white m-1" [tooltip]="add" trigger='hover'
+                          (click)="addSubcategory(z)">
+                          <i class="fas fa-plus"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm bg-common text-white m-1"
+                          (click)="openChildModal(childTemplate,i,z)" [tooltip]="remove" trigger='hover'
+                          [disabled]="getSubcategory(item,z).length==1">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div formGroupName="{{i}}" *ngIf="_isTableShow[z][i]" id="collapseBasic"
+                    [collapse]="_isCollapsed[z][i]">
+                    <div formGroupName="tableRequest">
+                      <div class="row m-2" formArrayName="tableHeaderRequests">
+                        <div class="col-12 pl-4" *ngFor="let tab of getTable(sub); let t = index" [formGroupName]="t">
+                          <label class="text-common font-weight-bold" *ngIf="t==0">Table : <span
+                              class="text-danger">*</span></label>
+                          <div class="row mt-1 mb-1">
+                            <div class="col-3 pr-0">
+                              <input type="text" maxlength=250 class="form-control form-control-sm" id="name"
+                                placeholder="Name" formControlName="columnName"
+                                [ngClass]="{ 'is-invalid': submitted && tab.controls.columnName.errors}">
+                              <div *ngIf="submitted && tab.controls.columnName.errors" class="pull-right text-danger">
+                                <div *ngIf="tab.controls.columnName.errors.required">Column name is required
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-3 pr-0">
+                              <input type="text" maxlength=250 class="form-control form-control-sm" id="description"
+                                placeholder="Description" formControlName="description"
+                                [ngClass]="{ 'is-invalid': submitted && tab.controls.description.errors}">
+                              <div *ngIf="submitted && tab.controls.description.errors" class="pull-right text-danger">
+                                <div *ngIf="tab.controls.description.errors.required">Description is required
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-3 pr-0">
+                              <select class="form-control form-control-sm" id="type" name="type"
+                                (change)="tableDropDownChanged($event.target.value,i,t,z)" formControlName="type"
+                                [ngClass]="{ 'is-invalid': submitted && tab.controls.type.errors}">
+                                <option value="" selected disabled>Select</option>
+                                <option value="text" [selected]="selectedValueInside(z,i,t) == 'text'">Textbox</option>
+                                <option value="dropdown" [selected]="selectedValueInside(z,i,t) == 'dropdown'"
+                                  *ngIf="tabNumber!=2 && tabNumber!=4">Dropdown</option>
+                              </select>
+                              <div *ngIf="submitted && tab.controls.type.errors" class="pull-right text-danger">
+                                <div *ngIf="tab.controls.type.errors.required">Type is required
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-3 pr-0">
+                              <button *ngIf="((getTable(sub).length==(t+1)) && (getTable(sub).length<100))"
+                                type="button" class="btn btn-sm bg-common text-white m-1" [tooltip]="add"
+                                trigger='hover' (click)="addTableColumn(sub)">
+                                <i class="fas fa-plus"></i>
+                              </button>
+                              <button [disabled]="getTable(sub).length==1" type="button"
+                                class="btn btn-sm bg-common text-white m-1" [tooltip]="remove" trigger='hover'
+                                (click)="openChildModal(childTemplate,i,z,t)">
+                                <i class="fas fa-times"></i>
+                              </button>
+                            </div>
+                          </div>
+
+                          <div *ngIf="_isTableDropDownShow[z][i][t]" id="collapseBasic" [collapse]="_isCollapsed[z][i]">
+                            <div class="row ml-2 mt-2" formArrayName="dropDownDefaultRequests">
+                              <div class="col-12 pl-4" *ngFor="let def of getTableDropdown(tab); let tj = index"
+                                [formGroupName]="tj">
+                                <label class="text-common font-weight-bold" *ngIf="tj==0">Option : <span
+                                    class="text-danger">*</span></label>
+                                <div class="row mt-1 mb-1">
+                                  <div class="col-7 pr-0">
+                                    <input type="text" maxlength=250 class="form-control form-control-sm" name="value"
+                                      id="value1" placeholder="options" formControlName="value"
+                                      aria-label="Text input with radio button"
+                                      [ngClass]="{ 'is-invalid': submitted && def.controls.value.errors}">
+                                    <div *ngIf="submitted && def.controls.value.errors" class="pull-right text-danger">
+                                      <div *ngIf="def.controls.value.errors.required">Value is required
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-5">
+                                    <button
+                                      *ngIf="((getTableDropdown(tab).length==(tj+1)) && (getTableDropdown(tab).length<100))"
+                                      type="button" class="btn btn-sm bg-common text-white m-1" [tooltip]="add"
+                                      trigger='hover' (click)="addTableDropDownDefault(i,t,z)">
+                                      <i class="fas fa-plus"></i>
+                                    </button>
+                                    <button [disabled]="getTableDropdown(tab).length==1" type="button"
+                                      class="btn btn-sm bg-common text-white m-1" [tooltip]="remove" trigger='hover'
+                                      (click)="openChildModal(childTemplate,i,z,t,tj);">
+                                      <i class="fas fa-times"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="_isDropDownShow[z][i]" formGroupName="{{i}}" id="collapseBasic"
+                    [collapse]="_isCollapsed[z][i]">
+                    <div formGroupName="dropDownRequest">
+                      <div class="row ml-2 mt-2" formArrayName="dropDownDefaultRequests">
+                        <div class="col-12 pl-4" *ngFor="let drop of getDropdownDefault(sub); let j = index"
+                          [formGroupName]="j">
+                          <label class="text-common font-weight-bold" *ngIf="j==0">Option : <span
+                              class="text-danger">*</span></label>
+                          <div class="row m-1">
+                            <div class="col-9 pl-0">
+                              <div class="input-group">
+                                <br>
+                                <input type="text" maxlength=250 class="form-control form-control-sm" id="dValue"
+                                  placeholder="options" formControlName="value"
+                                  [ngClass]="{ 'is-invalid': submitted && drop.controls.value.errors}">
+                              </div>
+                              <div *ngIf="submitted && drop.controls.value.errors" class="pull-right text-danger">
+                                <div *ngIf="drop.controls.value.errors.required">Value is required
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-2 pl-0">
+                              <button
+                                *ngIf="((getDropdownDefault(sub).length==(j+1)) && (getDropdownDefault(sub).length<100))"
+                                type="button" class="btn btn-sm bg-common text-white m-1" [tooltip]="add"
+                                trigger='hover' (click)="addDropDownDefault(i,j,z)">
+                                <i class="fas fa-plus"></i>
+                              </button>
+                              <button [disabled]="getDropdownDefault(sub).length==1" type="button"
+                                class="btn btn-sm bg-common text-white m-1" [tooltip]="remove" trigger='hover'
+                                (click)="openChildModal(childTemplate,i,z,undefined,undefined,j)">
+                                <i class="fas fa-times"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn bg-common text-white" (click)="save(form,z)">Save</button>
+              </div>
+            </div>
+            {{ this.form.getRawValue() | json }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</ng-template>
+<!----------------------------\.MODAL----------------------------->
+
+
+<!----------------------------CHILD MODAL------------------------------>
+<ng-template #childTemplate>
+  <div class="modal-body bg-light text-center">
+    <p>Are you sure you want to continue ?</p>
+    <button type="button" class="btn btn-default" (click)="confirm()">Yes</button>
+    <button type="button" autofocus class="btn bg-common text-white" (click)="decline()">No</button>
+  </div>
+</ng-template>
+<!---------------------------\.CHILD MODAL----------------------------->

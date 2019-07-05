@@ -1,0 +1,127 @@
+<div *ngIf="type=='outsideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="textRequest">
+              <div [ngSwitch]="level">
+                <input *ngSwitchCase="'Reviewee'" type="number"
+                  [ngClass]="{ 'is-invalid': _isSubmitted && textRequestOutside.get('employee').errors}"
+                  class="form-control form-control-sm quantity" formControlName="employee" id="no-{{iIndex}}-{{sIndex}}"
+                  name="no-{{iIndex}}-{{sIndex}}" [readonly]="_isDisabled" min="0" max="99" minlength="0" maxlength="99"
+                  onKeyPress="if((isNaN(Number(event.key)) || this.value>=10 || this.value<0)) return false;">
+                <div *ngIf="_isSubmitted && textRequestOutside.get('employee').errors" class="text-danger">
+                  <div *ngIf="textRequestOutside.get('employee').errors.required">
+                    Required Field
+                  </div>
+                </div>
+                <input *ngSwitchCase="'Reviewer'" type="number"
+                  [ngClass]="{ 'is-invalid': _isSubmitted && textRequestOutside.get('level1').errors}"
+                  class="form-control form-control-sm quantity" formControlName="level1" id="no-{{iIndex}}-{{sIndex}}"
+                  name="no-{{iIndex}}-{{sIndex}}" [readonly]="_isDisabled" min="0" max="99" minlength="0" maxlength="99"
+                  onKeyPress="if((isNaN(Number(event.key)) || this.value>=10 || this.value<0)) return false;">
+                <div *ngIf="_isSubmitted && textRequestOutside.get('level1').errors" class="text-danger">
+                  <div *ngIf="textRequestOutside.get('level1').errors.required">
+                    Required Field
+                  </div>
+                </div>
+                <input *ngSwitchCase="'Appraiser I'" type="number"
+                  [ngClass]="{ 'is-invalid': _isSubmitted && textRequestOutside.get('level2').errors}"
+                  class="form-control form-control-sm quantity" formControlName="level2" id="no-{{iIndex}}-{{sIndex}}"
+                  name="no-{{iIndex}}-{{sIndex}}" [readonly]="_isDisabled" min="0" max="99" minlength="0" maxlength="99"
+                  onKeyPress="if((isNaN(Number(event.key)) || this.value>=10 || this.value<0)) return false;">
+                <div *ngIf="_isSubmitted && textRequestOutside.get('level2').errors" class="text-danger">
+                  <div *ngIf="textRequestOutside.get('level2').errors.required">
+                    Required Field
+                  </div>
+                </div>
+                <input *ngSwitchCase="'Appraiser II'" type="number"
+                  [ngClass]="{ 'is-invalid': _isSubmitted && textRequestOutside.get('level3').errors}"
+                  class="form-control form-control-sm quantity" formControlName="level3" id="no-{{iIndex}}-{{sIndex}}"
+                  name="no-{{iIndex}}-{{sIndex}}" [readonly]="_isDisabled" min="0" max="99" minlength="0" maxlength="99"
+                  onKeyPress="if((isNaN(Number(event.key)) || this.value>=10 || this.value<0)) return false;">
+                <div *ngIf="_isSubmitted && textRequestOutside.get('level3').errors" class="text-danger">
+                  <div *ngIf="textRequestOutside.get('level3').errors.required">
+                    Required Field
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="type=='insideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="tableRequest">
+              <div formArrayName="tableValueListRequests">
+                <div [formGroupName]="rIndex">
+                  <div formArrayName="tableValueRequests">
+                    <div [formGroupName]="vIndex">
+                      <div formGroupName="textRequest">
+                        <div [ngSwitch]="level">
+                          <input *ngSwitchCase="'Reviewee'" type="number"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && textRequestInside.get('employee').errors}"
+                            class="form-control form-control-sm quantity" formControlName="employee"
+                            id="no-{{iIndex}}-{{sIndex}}" name="no-{{iIndex}}-{{sIndex}}" [readonly]="_isDisabled"
+                            min="0" max="99" minlength="0" maxlength="99"
+                            onKeyPress="if((isNaN(Number(event.key)) || this.value>=10 || this.value<0)) return false;">
+                          <div *ngIf="_isSubmitted && textRequestInside.get('employee').errors" class="text-danger">
+                            <div *ngIf="textRequestInside.get('employee').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                          <input *ngSwitchCase="'Reviewer'" type="number"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && textRequestInside.get('level1').errors}"
+                            class="form-control form-control-sm quantity" formControlName="level1"
+                            id="no-{{iIndex}}-{{sIndex}}" name="no-{{iIndex}}-{{sIndex}}" [readonly]="_isDisabled"
+                            min="0" max="99" minlength="0" maxlength="99"
+                            onKeyPress="if((isNaN(Number(event.key)) || this.value>=10 || this.value<0)) return false;">
+                          <div *ngIf="_isSubmitted && textRequestInside.get('level1').errors" class="text-danger">
+                            <div *ngIf="textRequestInside.get('level1').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                          <input *ngSwitchCase="'Appraiser I'" type="number"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && textRequestInside.get('level2').errors}"
+                            class="form-control form-control-sm quantity" formControlName="level2"
+                            id="no-{{iIndex}}-{{sIndex}}" name="no-{{iIndex}}-{{sIndex}}" [readonly]="_isDisabled"
+                            min="0" max="99" minlength="0" maxlength="99"
+                            onKeyPress="if((isNaN(Number(event.key)) || this.value>=10 || this.value<0)) return false;">
+                          <div *ngIf="_isSubmitted && textRequestInside.get('level2').errors" class="text-danger">
+                            <div *ngIf="textRequestInside.get('level2').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                          <input *ngSwitchCase="'Appraiser II'" type="number"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && textRequestInside.get('level3').errors}"
+                            class="form-control form-control-sm quantity" formControlName="level3"
+                            id="no-{{iIndex}}-{{sIndex}}" name="no-{{iIndex}}-{{sIndex}}" [readonly]="_isDisabled"
+                            min="0" max="99" minlength="0" maxlength="99"
+                            onKeyPress="if((isNaN(Number(event.key)) || this.value>=10 || this.value<0)) return false;">
+                          <div *ngIf="_isSubmitted && textRequestInside.get('level3').errors" class="text-danger">
+                            <div *ngIf="textRequestInside.get('level3').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

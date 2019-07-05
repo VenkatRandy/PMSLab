@@ -1,0 +1,494 @@
+<ng-container>
+  <app-alert *ngIf="(status|lowercase)=='success' || (status|lowercase)=='failure'" [status]="statusMessage">
+  </app-alert>
+</ng-container>
+<div class="mt-4">
+  <div class="row">
+    <div class="col-md-9 col-sm-6">
+      <h5>Release Reviews</h5>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <input type="text" [(ngModel)]="searchText" *ngIf="(releaseFormData?.length>0)" placeholder="Search...."
+        class="form-control form-control-sm pull-right" />
+    </div>
+  </div>
+  <hr class="m-0 p-0 mt-2" />
+</div>
+
+<app-tabset (tabnumber)="getTabNumber($event)"></app-tabset>
+
+<!------------------------------------------------------------------------------------------------------------------------->
+<section id="contact-list">
+  <div *ngIf="(!releaseFormData) ||(releaseFormData?.length==0)" class="alert alert-common text-center align-middle">
+    <strong>No Data Available</strong>
+  </div>
+
+  <div *ngIf="releaseFormData?.length>0" class="table-responsive">
+    <form>
+      <div>
+        <table #table class="table table-sm table-striped table-bordered">
+          <thead class="text-common">
+            <th (click)="sortBy('userId')">Emp.No <span class="ml-2"><i class="fas fa-sort text-thor"></i></span></th>
+            <th (click)="sortBy('name')">Name <span class="ml-2"><i class="fas fa-sort text-thor"></i></span></th>
+            <th>Appraiser II</th>
+            <th>Appraiser I</th>
+            <th>Reviewer</th>
+            <!-- <th (click)="sortBy('status')">Status <span class="ml-2"><i class="fas fa-sort text-common"></i></span></th> -->
+            <th (click)="sortBy('reviewStartDate')">Review Date <span class="ml-2"><i
+                  class="fas fa-sort text-thor"></i></span></th>
+            <th>Review</th>
+            <th>
+              <div class="custom-control custom-checkbox text-left">
+                <input type="checkbox" class="custom-control-input" (change)="releaseAll($event.target.checked)"
+                  [checked]="_isEverythingChecked" id="customCheck1">
+                <label class="custom-control-label" for="customCheck1"></label>
+                <span class="text-center pl-2">Select</span>
+              </div>
+            </th>
+          </thead>
+          <tr *ngFor="let row of releaseFormData
+                | filter : { 
+                'userId': searchText,
+                'name': searchText,
+                'status': searchText,
+                'reviewStartDate': searchText,
+                'level1ReviewerName':searchText,
+                'level2ReviewerName':searchText,
+                'level3ReviewerName':searchText
+              }
+              | sortBy  : {
+                property: column,
+                direction: direction
+              }
+              | paginate : {
+                itemsPerPage: 10,
+                currentPage: p
+              };let i=index;trackBy:trackByFnR">
+            <td>{{row.userId}} </td>
+            <td>{{row.name}} </td>
+            <td>{{row.level3ReviewerName | hyphen:'-'}} </td>
+            <td>{{row.level2ReviewerName | hyphen:'-'}} </td>
+            <td>{{row.level1ReviewerName | hyphen:'-'}} </td>
+            <!-- <td>{{row.status}} </td> -->
+            <td>{{row.reviewStartDate | date : 'dd-MMM-yyyy'}}</td>
+            <td>
+              <button class="btn  bg-thor btn-sm" (click)="openModal(template,row)"><i
+                  class="fa fa-eye eye text-white"></i></button>
+            </td>
+            <td>
+              <div class="custom-control custom-checkbox text-center">
+                <input type="checkbox" class="custom-control-input"
+                  (change)="releaseOne(((p-1)*10+i),$event.target.checked,row.uid)" [checked]="row.checkbox_value"
+                  id="customCheck2{{p}}{{i}}">
+                <label class="custom-control-label" for="customCheck2{{p}}{{i}}"></label>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </form>
+    <div *ngIf="table.rows.length == 0" class="col-12 alert alert-common text-center align-middle">
+      <strong>Search Results Not found!</strong>
+    </div>
+    <div *ngIf="releaseFormData?.length>10 " class="p-2">
+      <pagination-controls class="my-pagination" (pageChange)="p = $event" previousLabel="" nextLabel=""
+        class="pull-right"></pagination-controls>
+    </div>
+
+    <div class="mt-5">
+      <div class="pull-right mx-1">
+        <button *ngIf="table.rows.length != 0" type="button" (click)="releaseTo('release')"
+          [disabled]="((!isAtleastOnceSelected))" class="btn bg-thor text-white float-right">Release</button>
+      </div>
+      <div class="pull-right mx-1">
+        <button *ngIf="table.rows.length != 0" type="button" (click)="releaseTo('return')"
+          [disabled]="((!isAtleastOnceSelected))" class="btn bg-common text-white float-right">Return To
+          Reviewer</button>
+      </div>
+    </div>
+
+  </div>
+  <!-- <pre>{{this.releaseForm?.value | json}}</pre> -->
+</section>
+<!------------------------------------------------------------------------------------------------------------------------->
+
+<ng-template #template>
+  <div class="modal-header">
+    <h5 class="modal-title pull-left">Review</h5>
+    <div class="pull-right mt-0 ml-2" *ngIf="_isTemplateAvailable">
+      <select class="form-control form-control-sm  mt-0 pt-0" id="role" name="role" [(ngModel)]="selectedRole"
+        (ngModelChange)="typeChanged();reset2()">
+        <ng-container *ngFor="let role of roleType">
+          <option [value]="role">
+            {{role}}
+          </option>
+        </ng-container>
+      </select>
+    </div>
+    <div class="pull-right">
+      <div class="mx-2">
+        <a class="btn btn-sm bg-thor text-white" href="javascript:;" (click)="compare()">
+          <i class="fas fa-external-link-alt"></i>
+        </a>
+      </div>
+    </div>
+    <button type="button" class="close pull-right" aria-label="Close"
+      (click)="editRating=false;resetRating();modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="col-12 mt-2" *ngIf="_isTemplateAvailable">
+      <div *ngIf="(statusModal | lowercase)=='success'" class="alert alert-success">
+        <strong>Success!</strong>
+      </div>
+      <div *ngIf="(statusModal | lowercase)=='failure'" class="alert alert-danger">
+        <strong>Failure!</strong>
+      </div>
+
+      <accordion [closeOthers]="true">
+        <accordion-group *ngFor="let create of createList; let idx = index" [heading]="create.title" [isOpen]="idx==0"
+          (isOpenChange)="log($event)">
+          <div *ngIf="(!create?.rejected) && (reviewId==3)" class="pull-right" accordion-heading>
+            <p id="weight" class="pl-1 pull-right">{{weightage[idx]?.value}}</p>
+            <label for="weight" class="font-weight-bold pull-right">Weightage : </label>
+          </div>
+          <section id="contact-list">
+            <div *ngFor="let cat of selectedReviewData.templateResponses[0].categoryResponses; let i=index">
+              <ul class="list-group mt-1" *ngIf="idx==i">
+                <li class="list-group-item bg-light">
+                  <p>
+                    <span class="font-weight-bold text-viewall">Key Performance Indicators</span>
+                    <span *ngIf="cat.weightageAgainstKRA">
+                      <span class="pull-right">
+                        <div [ngSwitch]="selectedRole">
+                          <input *ngSwitchCase="'Reviewee'" type="text"
+                            class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                            [attr.disabled]="true" placeholder="KRA Weightage" [ngModel]="cat.textResponse.employee"
+                            id="weight-{{i}}" />
+                          <input *ngSwitchCase="'Reviewer'" type="text"
+                            class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                            [attr.disabled]="true" placeholder="KRA Weightage" [ngModel]="cat.textResponse.level1"
+                            id="weight-{{i}}" />
+                          <input *ngSwitchCase="'Appraiser I'" type="text"
+                            class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                            [attr.disabled]="true" placeholder="KRA Weightage" [ngModel]="cat.textResponse.level2"
+                            id="weight-{{i}}" />
+                          <input *ngSwitchCase="'Appraiser II'" type="text"
+                            class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                            [attr.disabled]="true" placeholder="KRA Weightage" [ngModel]="cat.textResponse.level3"
+                            id="weight-{{i}}" />
+                        </div>
+                      </span>
+                      <span class="font-weight-bold text-viewall pull-right"><label>KRA Weightage : </label></span>
+                    </span>
+                  </p>
+                  <div class="card p-0">
+                    <div class="card-body">
+                      <div *ngFor="let sub of cat.subCategoryResponses; let s=index" class="mt-2">
+                        <div *ngIf="(sub.type | lowercase) != 'table'">
+                          <div class="form-group row">
+                            <div class="col-md-3 font-weight-bold"
+                              [ngClass]="{'col-md-6 font-weight-bold':tabNumber!=3}">
+                              <p>{{ sub.name }}
+                                <i *ngIf="sub.description && sub.description!=''" class="fas fa-info-circle" triggers=""
+                                  #pop="bs-popover" [popover]="sub.description" popoverTitle="Description"
+                                  [outsideClick]="true" containerClass="customClass" (click)="open(pop)"
+                                  placement="right"></i>
+                              </p>
+                            </div>
+                            <div class="col-md-3" *ngIf="tabNumber==3">
+                              <p>{{sub.goal}}</p>
+                            </div>
+                            <div class="col-md-6">
+                              <div *ngIf="(sub.type | lowercase) == 'text'">
+                                <div [ngSwitch]="selectedRole">
+                                  <input *ngSwitchCase="'Reviewee'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}" [ngModel]="sub.textResponse.employee"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Reviewer'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}" [ngModel]="sub.textResponse.level1"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser I'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}" [ngModel]="sub.textResponse.level2"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser II'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}" [ngModel]="sub.textResponse.level3"
+                                    [attr.disabled]="true" />
+                                </div>
+                              </div>
+                              <div
+                                *ngIf="(sub.type | lowercase) == 'textarea' || (sub.type | lowercase) == 'text area'">
+                                <div [ngSwitch]="selectedRole">
+                                  <textarea *ngSwitchCase="'Reviewee'" class="form-control form-control-sm" id="txtArea"
+                                    rows="5" cols="50" [ngModel]="sub.textAreaResponse.employee"
+                                    [attr.disabled]="true"></textarea>
+                                  <textarea *ngSwitchCase="'Reviewer'" class="form-control form-control-sm" id="txtArea"
+                                    rows="5" cols="50" [ngModel]="sub.textAreaResponse.level1"
+                                    [attr.disabled]="true"></textarea>
+                                  <textarea *ngSwitchCase="'Appraiser I'" class="form-control form-control-sm"
+                                    id="txtArea" rows="5" cols="50" [ngModel]="sub.textAreaResponse.level2"
+                                    [attr.disabled]="true"></textarea>
+                                  <textarea *ngSwitchCase="'Appraiser II'" class="form-control form-control-sm"
+                                    id="txtArea" rows="5" cols="50" [ngModel]="sub.textAreaResponse.level3"
+                                    [attr.disabled]="true"></textarea>
+                                </div>
+                              </div>
+                              <div *ngIf="(sub.type | lowercase) == 'date'">
+                                <div [ngSwitch]="selectedRole">
+                                  <input *ngSwitchCase="'Reviewee'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}"
+                                    [ngModel]="sub.dateResponse.employee | date:'dd-MMM-yyyy'" [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Reviewer'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}"
+                                    [ngModel]="sub.dateResponse.level1 | date:'dd-MMM-yyyy'" [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser I'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}"
+                                    [ngModel]="sub.dateResponse.level2 | date:'dd-MMM-yyyy'" [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser II'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}"
+                                    [ngModel]="sub.dateResponse.level3 | date:'dd-MMM-yyyy'" [attr.disabled]="true" />
+                                </div>
+                              </div>
+                              <div *ngIf="(sub.type | lowercase) == 'dropdown'">
+                                <div [ngSwitch]="selectedRole">
+                                  <input *ngSwitchCase="'Reviewee'" type="text" class="form-control form-control-sm"
+                                    id="drop-{{i}}-{{s}}" name="drop-{{i}}-{{s}}"
+                                    [ngModel]="sub.dropDownResponse.dropDownSelectedResponse.employee"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Reviewer'" type="text" class="form-control form-control-sm"
+                                    id="drop-{{i}}-{{s}}" name="drop-{{i}}-{{s}}"
+                                    [ngModel]="sub.dropDownResponse.dropDownSelectedResponse.level1"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser I'" type="text" class="form-control form-control-sm"
+                                    id="drop-{{i}}-{{s}}" name="drop-{{i}}-{{s}}"
+                                    [ngModel]="sub.dropDownResponse.dropDownSelectedResponse.level2"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser II'" type="text" class="form-control form-control-sm"
+                                    id="drop-{{i}}-{{s}}" name="drop-{{i}}-{{s}}"
+                                    [ngModel]="sub.dropDownResponse.dropDownSelectedResponse.level3"
+                                    [attr.disabled]="true" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div *ngIf="(sub.type | lowercase) == 'table'">
+                          <div class="form-group row">
+                            <div class="col-md-4 font-weight-bold"
+                              [ngClass]="{'col-md-8 font-weight-bold':tabNumber!=3}">
+                              <p>{{ sub.name }}
+                                <i *ngIf="sub.description && sub.description!=''" class="fas fa-info-circle" triggers=""
+                                  #pop="bs-popover" [popover]="sub.description" popoverTitle="Description"
+                                  [outsideClick]="true" containerClass="customClass" (click)="open(pop)"
+                                  placement="right"></i>
+                              </p>
+                            </div>
+                            <div class="col-md-8" *ngIf="tabNumber==3">
+                              <p>{{sub.goal}}</p>
+                            </div>
+                          </div>
+                          <div class="form-group row">
+                            <div class="col-md-12">
+                              <div *ngIf="(sub.type | lowercase) == 'table'">
+                                <div class="container-fluid px-0">
+                                  <div id="table" class="table-responsive">
+                                    <table class="table table-stripped table-bordered">
+                                      <thead>
+                                        <th
+                                          *ngFor="let row of getTableColumns(cat.weightageAgainstKRA,sub.tableResponse); let id = index">
+                                          <span class="font-italic" [tooltip]="row.description"
+                                            trigger="hover">{{row.columnName}}</span>
+                                        </th>
+                                      </thead>
+                                      <ng-container
+                                        *ngFor="let rows of sub.tableResponse.tableValueListResponses; let rIdx = index; trackBy: trackByFnRows">
+                                        <tr>
+                                          <td class="mw-25"
+                                            *ngFor="let values of getTableValueResponses(cat.weightageAgainstKRA,sub.tableResponse,rows); let vIdx = index; trackBy: trackByFnCols">
+                                            <span *ngIf="(values.type | lowercase)=='text'">
+                                              <div [ngSwitch]="selectedRole">
+                                                <input *ngSwitchCase="'Reviewee'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}" [ngModel]="values.textResponse.employee"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Reviewer'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}" [ngModel]="values.textResponse.level1"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser I'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}" [ngModel]="values.textResponse.level2"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser II'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}" [ngModel]="values.textResponse.level3"
+                                                  [attr.disabled]="true" />
+                                              </div>
+                                            </span>
+                                            <span *ngIf="(values.type | lowercase)=='textarea'">
+                                              <div [ngSwitch]="selectedRole">
+                                                <textarea *ngSwitchCase="'Reviewee'" type="text"
+                                                  class="form-control form-control-sm" id="textarea-{{i}}-{{s}}"
+                                                  rows="5" cols="50" name="textarea-{{i}}-{{s}}"
+                                                  [ngModel]="values.textAreaResponse.employee"
+                                                  [attr.disabled]="true"> </textarea>
+                                                <textarea *ngSwitchCase="'Reviewer'" type="text"
+                                                  class="form-control form-control-sm" id="textarea-{{i}}-{{s}}"
+                                                  rows="5" cols="50" name="textarea-{{i}}-{{s}}"
+                                                  [ngModel]="values.textAreaResponse.level1"
+                                                  [attr.disabled]="true"> </textarea>
+                                                <textarea *ngSwitchCase="'Appraiser I'" type="text"
+                                                  class="form-control form-control-sm" id="textarea-{{i}}-{{s}}"
+                                                  rows="5" cols="50" name="textarea-{{i}}-{{s}}"
+                                                  [ngModel]="values.textAreaResponse.level2"
+                                                  [attr.disabled]="true"> </textarea>
+                                                <textarea *ngSwitchCase="'Appraiser II'" type="text"
+                                                  class="form-control form-control-sm" id="textarea-{{i}}-{{s}}"
+                                                  rows="5" cols="50" name="textarea-{{i}}-{{s}}"
+                                                  [ngModel]="values.textAreaResponse.level3"
+                                                  [attr.disabled]="true"> </textarea>
+                                              </div>
+                                            </span>
+                                            <span *ngIf="(values.type | lowercase) == 'dropdown'">
+                                              <div [ngSwitch]="selectedRole">
+                                                <input *ngSwitchCase="'Reviewee'" type="text"
+                                                  class="form-control form-control-sm" id="tdrop-{{i}}-{{s}}"
+                                                  name="tdrop-{{i}}-{{s}}"
+                                                  [ngModel]="values.dropDownSelectedResponse.employee"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Reviewer'" type="text"
+                                                  class="form-control form-control-sm" id="tdrop-{{i}}-{{s}}"
+                                                  name="tdrop-{{i}}-{{s}}"
+                                                  [ngModel]="values.dropDownSelectedResponse.level1"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser I'" type="text"
+                                                  class="form-control form-control-sm" id="tdrop-{{i}}-{{s}}"
+                                                  name="tdrop-{{i}}-{{s}}"
+                                                  [ngModel]="values.dropDownSelectedResponse.level2"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser II'" type="text"
+                                                  class="form-control form-control-sm" id="tdrop-{{i}}-{{s}}"
+                                                  name="tdrop-{{i}}-{{s}}"
+                                                  [ngModel]="values.dropDownSelectedResponse.level3"
+                                                  [attr.disabled]="true" />
+                                              </div>
+                                            </span>
+                                            <span *ngIf="(values.type | lowercase)=='date'">
+                                              <div [ngSwitch]="selectedRole">
+                                                <input *ngSwitchCase="'Reviewee'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}"
+                                                  [ngModel]="values.dateResponse.employee | date:'dd-MMM-yyyy'"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Reviewer'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}"
+                                                  [ngModel]="values.dateResponse.level1 | date:'dd-MMM-yyyy'"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser I'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}"
+                                                  [ngModel]="values.dateResponse.level2 | date:'dd-MMM-yyyy'"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser II'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}"
+                                                  [ngModel]="values.dateResponse.level3 | date:'dd-MMM-yyyy'"
+                                                  [attr.disabled]="true" />
+                                              </div>
+                                            </span>
+                                          </td>
+                                        </tr>
+                                      </ng-container>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </accordion-group>
+      </accordion>
+
+      <ng-container *ngIf="(tabNumber == 3)">
+        <div class="row mt-3 mx-2">
+          <!-- <div class="col-2"> -->
+          <label class="font-weight-bold">Rating :  </label>
+          <!-- </div>
+          <div class="col-10"> -->
+          {{rate}} -
+          <b *ngIf="level">
+            <span *ngIf="level=='Outstanding'" class="text-success">{{level}}</span>
+            <span *ngIf="level=='Exceed Expectations'" class="text-primary">{{level}}</span>
+            <span *ngIf="level=='Meets Expectations'" class="text-warning">{{level}}</span>
+            <span *ngIf="level=='Below Expectations'" class="text-danger">{{level}}</span>
+          </b>
+          <b *ngIf="!level">{{rate}}</b>
+          <!-- </div> -->
+        </div>
+
+        <a (click)="editRating=true;" class="btn btn-sm bg-thor text-white" role="button"
+          *ngIf="((!editRating) && (tabNumber==3) && (selectedRole=='Reviewer'))">Edit
+          Rating</a>
+
+        <div *ngIf="editRating" class="row my-3">
+          <div class="col-md-3 mt-2">
+            <input type="number" class="form-control form-control-sm" list="defaultNumbers"
+              pattern="^[1-9][0-9]?$|^100$" min="1" max="100"
+              onKeyPress="if((this.value>=100 || this.value<0)) return false;"
+              [(ngModel)]='selectedReviewData.templateResponses[0].level1Rating' (ngModelChange)="projectRating()" />
+            <span class="validity"></span>
+            <datalist id="defaultNumbers">
+              <option value="55">
+              <option value="65">
+              <option value="75">
+              <option value="85">
+              <option value="95">
+            </datalist>
+          </div>
+
+          <div class="col-md-3 my-2">
+            <button (click)="saveRating()" class="btn btn-sm bg-thor text-white mx-1" role="button"
+              [disabled]="selectedReviewData.templateResponses[0].level1Rating==0 || selectedReviewData.templateResponses[0].level1Rating==undefined">Release</button>
+            <a (click)="editRating=false;resetRating()" class="btn btn-sm bg-thor text-white mx-1"
+              role="button">Cancel</a>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="(tabNumber == 1)">
+        <div class="row mt-3">
+          <div class="col-2">
+            <label class="font-weight-bold">Rating : </label>
+          </div>
+          <div class="col-10">
+            {{rate}} -
+            <b *ngIf="level">
+              <span *ngIf="level=='Outstanding'" class="text-success">{{level}}</span>
+              <span *ngIf="level=='Exceed Expectations'" class="text-primary">{{level}}</span>
+              <span *ngIf="level=='Meets Expectations'" class="text-warning">{{level}}</span>
+              <span *ngIf="level=='Below Expectations'" class="text-danger">{{level}}</span>
+            </b>
+            <b *ngIf="!level">{{rate}}</b>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="row mx-0" *ngIf="!_isTemplateAvailable">
+    <div class="col-12 justify-content-center">
+      <div class="alert alert-common" role="alert">
+        Something went wrong. Please Try again.
+      </div>
+    </div>
+  </div>
+</ng-template>

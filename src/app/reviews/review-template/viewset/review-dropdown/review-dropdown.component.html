@@ -1,0 +1,160 @@
+<div *ngIf="type=='outsideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="dropDownRequest">
+              <div formGroupName="dropDownSelectedRequest">
+                <div [ngSwitch]="level">
+                  <select *ngSwitchCase="'Reviewee'" class="form-control" [disabled]="_isDisabled"
+                    [ngClass]="{ 'is-invalid': _isSubmitted && dropDownRequestOutside.get('employee').errors}"
+                    id="type-{{iIndex}}-{{sIndex}}" name="type-{{iIndex}}-{{sIndex}}"
+                    (change)="injectValueOutside($event.target.value)">
+                    <option value="" selected disabled>Select</option>
+                    <option [value]="opt.value" *ngFor="let opt of values.dropDownDefaultRequests"
+                      [selected]="opt.value==employeeComments">{{opt.value}}
+                    </option>
+                  </select>
+                  <div *ngIf="_isSubmitted && dropDownRequestOutside.get('employee').errors" class="text-danger">
+                    <div *ngIf="dropDownRequestOutside.get('employee').errors.required">
+                      Required Field
+                    </div>
+                  </div>
+                  <select *ngSwitchCase="'Reviewer'" class="form-control" [disabled]="_isDisabled"
+                    [ngClass]="{ 'is-invalid': _isSubmitted && dropDownRequestOutside.get('level1').errors}"
+                    id="type-{{iIndex}}-{{sIndex}}" name="type-{{iIndex}}-{{sIndex}}"
+                    (change)="injectValueOutside($event.target.value)">
+                    <option hidden value="" disabled selected="selected">Select</option>
+                    <option [value]="opt.value" [selected]="opt.value==level1Comments"
+                      *ngFor="let opt of values.dropDownDefaultRequests">{{opt.value}}
+                    </option>
+                  </select>
+                  <div *ngIf="_isSubmitted && dropDownRequestOutside.get('level1').errors" class="text-danger">
+                    <div *ngIf="dropDownRequestOutside.get('level1').errors.required">
+                      Required Field
+                    </div>
+                  </div>
+                  <select *ngSwitchCase="'Appraiser I'" class="form-control" [disabled]="_isDisabled"
+                    [ngClass]="{ 'is-invalid': _isSubmitted && dropDownRequestOutside.get('level2').errors}"
+                    id="type-{{iIndex}}-{{sIndex}}" name="type-{{iIndex}}-{{sIndex}}"
+                    (change)="injectValueOutside($event.target.value)">
+                    <option value="" selected disabled>Select</option>
+                    <option [value]="opt.value" *ngFor="let opt of values.dropDownDefaultRequests"
+                      [selected]="opt.value==level2Comments">{{opt.value}}
+                    </option>
+                  </select>
+                  <div *ngIf="_isSubmitted && dropDownRequestOutside.get('level2').errors" class="text-danger">
+                    <div *ngIf="dropDownRequestOutside.get('level2').errors.required">
+                      Required Field
+                    </div>
+                  </div>
+                  <select *ngSwitchCase="'Appraiser II'" class="form-control" [disabled]="_isDisabled"
+                    [ngClass]="{ 'is-invalid': _isSubmitted && dropDownRequestOutside.get('level3').errors}"
+                    id="type-{{iIndex}}-{{sIndex}}" name="type-{{iIndex}}-{{sIndex}}"
+                    (change)="injectValueOutside($event.target.value)">
+                    <option value="" selected disabled>Select</option>
+                    <option [value]="opt.value" *ngFor="let opt of values.dropDownDefaultRequests"
+                      [selected]="opt.value==level3Comments">{{opt.value}}
+                    </option>
+                  </select>
+                  <div *ngIf="_isSubmitted && dropDownRequestOutside.get('level3').errors" class="text-danger">
+                    <div *ngIf="dropDownRequestOutside.get('level3').errors.required">
+                      Required Field
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div *ngIf="type=='insideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="tableRequest">
+              <div formArrayName="tableValueListRequests">
+                <div [formGroupName]="rIndex">
+                  <div formArrayName="tableValueRequests">
+                    <div [formGroupName]="vIndex">
+                      <div formGroupName="dropDownSelectedRequest">
+                        <div [ngSwitch]="level">
+                          <select *ngSwitchCase="'Reviewee'" class="form-control" [disabled]="_isDisabled"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && dropDownRequestInside.get('employee').errors}"
+                            id="type-{{iIndex}}-{{sIndex}}" name="type-{{iIndex}}-{{sIndex}}"
+                            (change)="injectValueInside($event.target.value)">
+                            <option value="" selected disabled>Select</option>
+                            <option [value]="opt.value" *ngFor="let opt of values; trackBy: trackByFnOpts"
+                              [selected]="opt.value==employeeCommentsIn">{{opt.value}}
+                            </option>
+                          </select>
+                          <div *ngIf="_isSubmitted && dropDownRequestInside.get('employee').errors" class="text-danger">
+                            <div *ngIf="dropDownRequestInside.get('employee').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                          <select *ngSwitchCase="'Reviewer'" class="form-control" [disabled]="_isDisabled"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && dropDownRequestInside.get('level1').errors}"
+                            id="type-{{iIndex}}-{{sIndex}}" name="type-{{iIndex}}-{{sIndex}}"
+                            (change)="injectValueInside($event.target.value)">
+                            <option hidden value="" disabled selected>Select</option>
+                            <option [value]="opt.value" *ngFor="let opt of values; trackBy: trackByFnOpts"
+                              [selected]="opt.value==level1CommentsIn">{{opt.value}}
+                            </option>
+                          </select>
+                          <div *ngIf="_isSubmitted && dropDownRequestInside.get('level1').errors" class="text-danger">
+                            <div *ngIf="dropDownRequestInside.get('level1').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                          <select *ngSwitchCase="'Appraiser I'" class="form-control" [disabled]="_isDisabled"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && dropDownRequestInside.get('level2').errors}"
+                            id="type-{{iIndex}}-{{sIndex}}" name="type-{{iIndex}}-{{sIndex}}"
+                            (change)="injectValueInside($event.target.value)">
+                            <option value="" selected disabled>Select</option>
+                            <option [value]="opt.value" *ngFor="let opt of values; trackBy: trackByFnOpts"
+                              [selected]="opt.value==level2CommentsIn">{{opt.value}}
+                            </option>
+                          </select>
+                          <div *ngIf="_isSubmitted && dropDownRequestInside.get('level2').errors" class="text-danger">
+                            <div *ngIf="dropDownRequestInside.get('level2').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                          <select *ngSwitchCase="'Appraiser II'" class="form-control" [disabled]="_isDisabled"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && dropDownRequestInside.get('level3').errors}"
+                            id="type-{{iIndex}}-{{sIndex}}" name="type-{{iIndex}}-{{sIndex}}"
+                            (change)="injectValueInside($event.target.value)">
+                            <option value="" selected disabled>Select</option>
+                            <option [value]="opt.value" *ngFor="let opt of values; trackBy: trackByFnOpts"
+                              [selected]="opt.value==level3CommentsIn">{{opt.value}}
+                            </option>
+                          </select>
+                          <div *ngIf="_isSubmitted && dropDownRequestInside.get('level3').errors" class="text-danger">
+                            <div *ngIf="dropDownRequestInside.get('level3').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

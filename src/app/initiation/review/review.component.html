@@ -1,0 +1,152 @@
+<ng-container>
+  <app-alert *ngIf="(status|lowercase)=='success' || (status|lowercase)=='failure'" [status]="statusMessage">
+  </app-alert>
+</ng-container>
+<div class="my-2">
+  <div class="row">
+    <div class="col-md-9 col-sm-6">
+      <h5>Initiate Reviews</h5>
+    </div>
+    <div class="col-md-3 col-sm-6" *ngIf="(list?.length>0)">
+      <div class="input-group">
+        <input class="form-control form-control-sm py-2 border-right-0 border" type="search" placeholder="Search.."
+          id="example-search-input" [(ngModel)]="searchText" (ngModelChange)="search($event)">
+        <span class="input-group-append">
+          <div class="input-group-text bg-transparent"><i class="fa fa-xs fa-search"></i></div>
+        </span>
+      </div>
+    </div>
+  </div>
+  <hr class="m-0 p-0 mt-2" />
+</div>
+
+<app-tabset (tabnumber)="getTabNumber($event)"></app-tabset>
+<section id="contact-list" class="pb-5">
+  <div *ngIf="list?.length==0" class="alert alert-thor text-center align-middle">
+    <strong>No Data Available</strong>
+  </div>
+
+  <div id="responsive" class="table-responsive mt-3" *ngIf="list?.length>0">
+    <table #table class="table table-sm table-hover table-bordered text-nowrap mb-0">
+      <thead class="text-common">
+        <th (click)="sortBy('userId')">Emp.No<span><i class="fas fa-sort text-thor ml-2"></i></span></th>
+        <th (click)="sortBy('name')">Name<span><i class="fas fa-sort text-thor ml-2"></i></span></th>
+        <th>Designation</th>
+        <th>Reviewer</th>
+        <th>Completion Date</th>
+        <th>
+          <div class="custom-control custom-checkbox text-center" *ngIf="(!checkBoxHide)">
+            <input type="checkbox" class="custom-control-input" [checked]="isEverythingSelected"
+              (change)="checkAllEmployees(tabNumber,$event)" id="customCheck1">
+            <label class="custom-control-label" for="customCheck1"></label>
+          </div>
+        </th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of list
+              | filter : {
+                'userId': searchText,
+                'name': searchText,
+                'lastName': searchText,
+                'designation': searchText
+              }
+              | sortBy  : {
+                property: column,
+                direction: direction
+              }
+              | paginate : {
+                itemsPerPage: 10,
+                currentPage: p
+              };let i =index;trackBy:trackByFn">
+          <td>{{data.userId}}</td>
+          <td>{{data.name}}</td>
+          <td>{{data.designation}}</td>
+          <td>
+            {{(data.manager?.firstName | hyphen:'-' ) +' '+ (data.manager?.lastName | hyphen:' ' ) }}
+          </td>
+          <!-- (bsValueChange)="setDate($event,data.uid)" -->
+          <td><input type="text" readonly autocomplete="off" bsDatepicker class="form-control form-control-sm" id="date"
+              name="date" #dtOS="bsDatepicker" placeholder="DD-MMM-YYYY" [(bsValue)]="data.reviewEndDate"
+              value="{{ data.reviewEndDate | date:'dd-MMM-yyyy' }}" [minDate]="minDate" [disabled]="data.isDisabled"
+              [bsConfig]="{ dateInputFormat: 'DD-MMM-YYYY', containerClass: 'theme-dark-blue',showWeekNumbers:false }" />
+          </td>
+          <td>
+            <div class="custom-control custom-checkbox text-center">
+              <input type="checkbox" class="custom-control-input" (change)="checkEmployees($event,data)"
+                [checked]="data.checkbox_value" id="customCheck{{p}}{{i}}">
+              <label class="custom-control-label" for="customCheck{{p}}{{i}}"></label>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="table.rows.length == 0" class="col-12 alert alert-thor text-center align-middle">
+      <strong>Search Results Not found!</strong>
+    </div>
+    <div *ngIf="list?.length>10" class="p-2">
+      <pagination-controls class="my-pagination" (pageChange)="p = $event" previousLabel="" nextLabel=""
+        class="pull-right"></pagination-controls>
+    </div>
+    <div class="mt-5">
+      <button *ngIf="list?.length > 0" type="button" (click)="initiateEmployee(noManagerModal)"
+        [disabled]="!isAtleastOnceSelected" class="btn bg-thor text-white float-right">Submit</button>
+    </div>
+  </div>
+</section>
+
+<!-- No Manager---------------------------------------------------------------------------------------------------------------------->
+<ng-template #noManagerModal>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left text-danger font-weight-bold">Alert!</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal(noManagerModal)">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <ng-container class="my-1" *ngIf="initiated.length>0">
+      <p>Review Initation Success for the Employee(s)</p>
+      <ng-container>
+        <div class="table-responsive mx-2">
+          <table class="table table-sm table-striped table-bordered">
+            <thead class="text-dark">
+              <th>S.NO.</th>
+              <th>Employee ID</th>
+              <th>Name</th>
+            </thead>
+            <tbody>
+              <tr *ngFor="let no of initiated;let x = index">
+                <td>{{x+1}}</td>
+                <td>{{no.userId}}</td>
+                <td>{{no.name}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <ng-container class="my-1" *ngIf="noManager.length>0">
+      <p>Cannot Initiate Review for these Employee(s) as they currently don't have a Reviewer.</p>
+      <ng-container>
+        <div class="table-responsive mx-2">
+          <table class="table table-sm table-striped table-bordered">
+            <thead class="text-dark">
+              <th>S.NO.</th>
+              <th>Employee ID</th>
+              <th>Name</th>
+            </thead>
+            <tbody>
+              <tr *ngFor="let no of noManager;let x = index">
+                <td>{{x+1}}</td>
+                <td>{{no.userId}}</td>
+                <td>{{no.name}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+</ng-template>
+<!-- \. No Manager---------------------------------------------------------------------------------------------------------------------->

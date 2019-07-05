@@ -1,0 +1,96 @@
+<ng-container>
+  <app-alert *ngIf="(status|lowercase)=='success' || (status|lowercase)=='failure'" [status]="statusMessage">
+  </app-alert>
+</ng-container>
+<div class="mt-4">
+  <div class="row">
+    <div class="col-md-6">
+      <h5>{{reviewType}} Review Revoke</h5>
+    </div>
+    <div class="col-md-2">
+
+    </div>
+    <div class="col-md-3">
+      <div class="m-0 p-0" *ngIf="list?.length>0">
+        <div class="input-group">
+          <input class="form-control form-control-sm py-2 border-right-0 border" type="search" placeholder="Search.."
+            id="example-search-input" [(ngModel)]="searchText">
+          <span class="input-group-append">
+            <div class="input-group-text bg-transparent"><i class="fa fa-xs fa-search"></i></div>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-1">
+
+    </div>
+
+  </div>
+  <hr class="m-0 p-0 mt-2" />
+</div>
+
+<div *ngIf="(list.length==0)" class="alert alert-common text-center align-middle mt-4">
+  <strong>No Data Available</strong>
+</div>
+
+<div id="responsive" class="table-responsive mt-3" *ngIf="list.length>0">
+    <table #table class="table  table-sm table-hover table-bordered text-nowrap mb-0">
+      <thead>
+        <th>
+          <div class="custom-control custom-checkbox text-center">
+            <input type="checkbox" class="custom-control-input" [checked]="isEveryThingChecked"
+              (change)="checkORUnCheckAll($event)" id="customCheck1">
+            <label class="custom-control-label" for="customCheck1"></label>
+          </div>
+        </th>
+        <th>Emp No</th>
+        <th>Name</th>
+        <th>Review Start Date</th>
+        <th>Review End Date</th>
+        <th>Appraiser II</th>
+        <th>Appraiser I</th>
+        <th>Reviewer</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of list
+        | filter : {
+          name: searchText,
+          userId: searchText
+        }
+        | paginate : {
+          itemsPerPage: 10,
+          currentPage: p
+        };let i=index">
+          <td>
+            <div class="custom-control custom-checkbox text-center">
+              <input type="checkbox" class="custom-control-input" (change)="findChecked($event,data.userId)"
+                [checked]="data.isChecked" id="customCheck{{p}}{{i}}">
+              <label class="custom-control-label" for="customCheck{{p}}{{i}}"></label>
+            </div>
+          </td>
+          <td>{{data.userId}}</td>
+          <td>{{data.name}}</td>
+          <td>{{data.reviewStartDate | date : 'dd-MMM-yyyy'}}</td>
+          <td>{{data.reviewEndDate | date : 'dd-MMM-yyyy'}}</td>
+          <td>{{data.level3ReviewerName | hyphen:'-'}} </td>
+          <td>{{data.level2ReviewerName | hyphen:'-'}} </td>
+          <td>{{data.level1ReviewerName | hyphen:'-'}} </td>
+        </tr>
+      </tbody>
+    </table>
+
+  <div *ngIf="table.rows.length == 0" class="col-12 alert alert-common text-center align-middle">
+    <strong>Search Results Not found!</strong>
+  </div>
+
+  <div *ngIf="list.length>10 " class="p-2">
+    <pagination-controls class="my-pagination" (pageChange)="p = $event" previousLabel="" nextLabel=""
+      class="pull-right"></pagination-controls>
+  </div>
+
+  <div class="mt-5">
+    <button *ngIf="list.length != 0" type="button" (click)="submit()" [disabled]="!isAtleastOnceSelected"
+      class="btn bg-thor text-white float-right">Submit</button>
+  </div>
+
+</div>

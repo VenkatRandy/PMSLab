@@ -1,0 +1,60 @@
+<div class="container-fluid px-0">
+  <div id="table" class="table-responsive">
+    <table class="table table-stripped table-bordered">
+      <thead>
+        <th *ngFor="let row of tableColumns(); let id = index"><span class="font-weight-bold"
+            [tooltip]="row.description" trigger="hover">{{row.columnName}}
+          </span>
+        </th>
+        <th *ngIf="canModify"><span class="font-italic" tooltip="Add Row" trigger="hover">Add</span></th>
+      </thead>
+      <ng-container *ngFor="let rows of tableRows(); let rIdx = index; trackBy: trackByFnRows">
+        <tr>
+          <td class="mw-25" *ngFor="let values of tableValueRequests(rows); let vIdx = index; trackBy: trackByFnCols">
+            <span *ngIf="((values.columnName | lowercase) == 'weightage') && ((values.type | lowercase)=='text')">
+              <app-review-number [form]="form" [iIndex]="iIndex" [sIndex]="sIndex" [rIndex]="rIdx" [vIndex]="vIdx"
+                [type]="_insideTable" [level]="level" [submitted]="submitted" [_isDisabled]="dropType">
+              </app-review-number>
+            </span>
+
+            <span *ngIf="((values.columnName | lowercase) != 'weightage') && ((values.type | lowercase)=='text')">
+              <app-review-text [form]="form" [iIndex]="iIndex" [sIndex]="sIndex" [rIndex]="rIdx" [vIndex]="vIdx"
+                [type]="_insideTable" [level]="level" [submitted]="submitted" [_isDisabled]="dropType">
+              </app-review-text>
+            </span>
+
+            <span *ngIf="(values.type | lowercase)=='textarea'">
+              <app-review-textarea [form]="form" [iIndex]="iIndex" [sIndex]="sIndex" [rIndex]="rIdx" [vIndex]="vIdx"
+                [type]="_insideTable" [level]="level" [submitted]="submitted" [_isDisabled]="dropType">
+              </app-review-textarea>
+            </span>
+
+            <span *ngIf="(values.type | lowercase)=='date'">
+              <app-review-date [form]="form" [iIndex]="iIndex" [sIndex]="sIndex" [rIndex]="rIdx" [vIndex]="vIdx"
+                [type]="_insideTable" [level]="level" [submitted]="submitted" [_isDisabled]="dropType">
+              </app-review-date>
+            </span>
+            <span *ngIf="(values.type | lowercase) == 'dropdown'">
+              <app-review-dropdown [form]="form" [iIndex]="iIndex" [sIndex]="sIndex" [rIndex]="rIdx" [vIndex]="vIdx"
+                [type]="_insideTable" [values]="values.dropDownDefaultRequests" [level]="level" [submitted]="submitted"
+                [_isDisabled]="dropType">
+              </app-review-dropdown>
+            </span>
+          </td>
+          <td *ngIf="canModify">
+            <div class="text-nowrap">
+              <button *ngIf="tableRows().length-1 == rIdx" type="button" class="btn btn-sm bg-common text-white m-1"
+                (click)="addRow()">
+                <i class="fas fa-plus"></i>
+              </button>
+              <button *ngIf="(_isRemoveAvailable)" type="button" class="btn btn-sm bg-danger text-white m-1"
+                (click)="removeRow(rIdx)" [disabled]="(tableRows().length==1)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </table>
+  </div>
+</div>

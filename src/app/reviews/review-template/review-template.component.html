@@ -1,0 +1,576 @@
+<ng-container>
+  <app-alert *ngIf="(status|lowercase)=='success' || (status|lowercase)=='failure'" [status]="statusMessage">
+  </app-alert>
+</ng-container>
+<div class="row">
+  <div class="col-12  mt-2">
+    <div class="pull-right ml-2">
+      <button type="submit" class="btn btn-sm bg-common text-white" (click)="goBack()">
+        <i class="fa fa-angle-left"></i> Back
+      </button>
+    </div>
+    <div class="pull-right mx-2" *ngIf="roleType?.length > 0">
+      <button type="submit" class="btn btn-sm bg-common text-white" (click)="openReviews(review)">
+        <i class="fas fa-eye"></i> View
+      </button>
+    </div>
+  </div>
+</div>
+<div class="row mt-3 mx-0">
+  <div *ngIf="(createList.length==0 && createList) || invalidR" class="col-12 alert alert-info" role="alert">
+    <strong>Something went wrong. Please Try again.</strong>
+  </div>
+  <div class="col-12" *ngIf="createList.length>0">
+    <accordion [closeOthers]="false">
+      <accordion-group *ngFor="let create of createList; let idx = index" [heading]="create.title"
+        (isOpenChange)="accordianChanged($event,idx)" [isOpen]="create.open">
+        <!-- [isOpen]="(submitted && openAll) || (!submitted && idx==0)" -->
+        <p *ngIf="create.weightage!=0" class="pull-right" accordion-heading><b class="text-common">Weightage:</b>
+          <span class="text-dark">{{create.weightage}}</span></p>
+        <div>
+          <form [formGroup]="form">
+            <section>
+              <div formArrayName="categoryRequests">
+                <ng-container
+                  *ngFor="let item of getCategoryRequests().value; let z = index; trackBy: trackByCategoryFn">
+                  <div formGroupName={{z}}>
+                    <div *ngIf="(z==idx)">
+                      <ul class="list-group mt-1">
+                        <li class="list-group-item bg-light">
+                          <p>
+                            <span class="font-weight-bold text-viewall">Key Performance Indicators</span>
+                            <span class="pull-right" *ngIf="item.weightageAgainstKRA">
+                              <div formGroupName="textRequest">
+                                <div [ngSwitch]="level">
+                                  <input *ngSwitchCase="'Reviewee'" type="number"
+                                    class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                                    [ngClass]="{ 'is-invalid': submitted && getWeightageError(z)}"
+                                    (click)="$event.stopPropagation(); false;" placeholder="KRA Weightage"
+                                    formControlName="employee"
+                                    onKeyPress="if((isNaN(Number(event.key)) || this.value>=10 || this.value<0)) return false;"
+                                    id="weight" />
+                                  <input *ngSwitchCase="'Reviewer'" type="number"
+                                    class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                                    [ngClass]="{ 'is-invalid': submitted && getWeightageError(z)}"
+                                    (click)="$event.stopPropagation(); false;" placeholder="KRA Weightage"
+                                    formControlName="level1"
+                                    onKeyPress="if((isNaN(Number(event.key)) || this.value>=10 || this.value<0)) return false;"
+                                    id="weight" />
+                                  <input *ngSwitchCase="'Appraiser I'" type="number"
+                                    class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                                    [ngClass]="{ 'is-invalid': submitted && getWeightageError(z)}"
+                                    (click)="$event.stopPropagation(); false;" placeholder="KRA Weightage"
+                                    formControlName="level2"
+                                    onKeyPress="if((isNaN(Number(event.key)) || this.value>=10 || this.value<0)) return false;"
+                                    id="weight" />
+                                  <input *ngSwitchCase="'Appraiser II'" type="number"
+                                    class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                                    [ngClass]="{ 'is-invalid': submitted && getWeightageError(z)}"
+                                    (click)="$event.stopPropagation(); false;" placeholder="KRA Weightage"
+                                    formControlName="level3"
+                                    onKeyPress="if((isNaN(Number(event.key)) || this.value>=10 || this.value<0)) return false;"
+                                    id="weight" />
+                                </div>
+                              </div>
+                            </span>
+                          </p>
+                          <div class="card p-0">
+                            <div class="card-body">
+                              <div class="form-group row">
+                                <div class="col-md-4">
+                                  <label class="font-weight-bold">KPI</label>
+                                </div>
+                                <div class="col-md-4">
+                                  <!-- <label class="font-weight-bold" *ngIf="reviewId!=3">Description</label> -->
+                                  <label class="font-weight-bold" *ngIf="reviewId==3">Goal</label>
+                                </div>
+                              </div>
+                              <div formArrayName="subCategoryRequests">
+                                <div
+                                  *ngFor="let sub of item.subCategoryRequests; let s = index; trackBy: trackBySubcategoryFn"
+                                  class="mt-2">
+                                  <div formGroupName={{s}}>
+                                    <div *ngIf="(sub.type | lowercase) != 'table'">
+                                      <div class="form-group row">
+                                        <div class="col-md-4 font-weight-bold">
+                                          <p>{{ sub.name }}
+                                            <i *ngIf="sub.description && sub.description!=''" class="fas fa-info-circle"
+                                              triggers="" #pop="bs-popover" [popover]="sub.description"
+                                              popoverTitle="Description" [outsideClick]="true"
+                                              containerClass="customClass" (click)="open(pop)" placement="right"></i>
+                                          </p>
+                                        </div>
+                                        <div class="col-md-4" *ngIf="reviewId==3">
+                                          <p>{{sub.goal}}</p>
+                                        </div>
+                                        <div class="col-md-4 pull-right">
+                                          <div *ngIf="(sub.type | lowercase) == 'text'">
+                                            <app-review-text [form]="form" [iIndex]="z" [sIndex]="s"
+                                              [type]="_outsideTable" [level]="level" [_isDisabled]="dropType">
+                                            </app-review-text>
+                                          </div>
+                                          <div
+                                            *ngIf="(sub.type | lowercase) == 'textarea' || (sub.type | lowercase) == 'text area'">
+                                            <app-review-textarea [form]="form" [iIndex]="z" [sIndex]="s"
+                                              [type]="_outsideTable" [level]="level" [_isDisabled]="dropType">
+                                            </app-review-textarea>
+                                          </div>
+                                          <div *ngIf="(sub.type | lowercase) == 'date'">
+                                            <app-review-date [form]="form" [iIndex]="z" [sIndex]="s"
+                                              [type]="_outsideTable" [level]="level" [_isDisabled]="dropType">
+                                            </app-review-date>
+                                          </div>
+                                          <div *ngIf="(sub.type | lowercase) == 'dropdown'">
+                                            <app-review-dropdown [form]="form" [iIndex]="z" [sIndex]="s"
+                                              [type]="_outsideTable" [values]="sub.dropDownRequest" [level]="level"
+                                              [_isDisabled]="dropType">
+                                            </app-review-dropdown>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div *ngIf="(sub.type | lowercase) == 'table'">
+                                      <div class="form-group row">
+                                        <div class="col-md-4 font-weight-bold"
+                                          [ngClass]="{'col-md-8 font-weight-bold':reviewId!=3}">
+                                          <p>{{ sub.name }}
+                                            <i *ngIf="sub.description && sub.description!=''" class="fas fa-info-circle"
+                                              triggers="" #pop="bs-popover" [popover]="sub.description"
+                                              popoverTitle="Description" [outsideClick]="true"
+                                              containerClass="customClass" (click)="open(pop)" placement="right"></i>
+                                          </p>
+                                        </div>
+                                        <div class="col-md-4" *ngIf="reviewId==3">
+                                          <p>{{sub.goal}}</p>
+                                        </div>
+                                      </div>
+                                      <div class="form-group row">
+                                        <div class="col-md-12">
+                                          <div *ngIf="(sub.type | lowercase) == 'table'">
+                                            <app-review-table [form]="form" [iIndex]="z" [sIndex]="s"
+                                              [submittedObj]="submittedObj" [values]="sub.tableRequests" [mode]="mode"
+                                              [level]="level" [_isDisabled]="dropType"
+                                              [weightageAgainstKRA]="sub.weightageAgainstKRA">
+                                            </app-review-table>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </section>
+          </form>
+        </div>
+      </accordion-group>
+
+      <div class="row my-5">
+        <div class="col-12">
+          <div>
+            <button type="submit" class="btn bg-common text-white pull-right mx-1"
+              (click)="onSubmit(form,template,weight,'submit',current,invalidsubmit)" [tooltip]="invalid"
+              placement="top" triggers="" #invalidsubmit="bs-tooltip" [disabled]="disableButton">Submit</button>
+          </div>
+          <div>
+            <button type="submit" class="btn bg-common text-white pull-right mx-1"
+              (click)="onSubmit(form,template,weight,'save',current,invalidsave)" [tooltip]="invalid" placement="top"
+              triggers="" #invalidsave="bs-tooltip" [disabled]="disableButton">Save</button>
+          </div>
+        </div>
+      </div>
+    </accordion>
+  </div>
+</div>
+
+<ng-template #template>
+  <div class="modal-header">
+    <h5 class="modal-title pull-left">Alert</h5>
+  </div>
+  <div class="modal-body">
+    {{status}} !
+  </div>
+</ng-template>
+
+<!-- <pre>{{this.form.value | json}}</pre> -->
+
+
+
+
+
+
+
+
+
+<!------------------------------------------------------------------------------------------------------------------------->
+
+<ng-template #review>
+  <div class="modal-header">
+    <h5 class="modal-title pull-left">Review</h5>
+    <div class="pull-right mt-0 ml-2" *ngIf="_isTemplateAvailable">
+      <select class="form-control form-control-sm  mt-0 pt-0" id="role" name="role" [(ngModel)]="selectedRole"
+        (ngModelChange)="calculateRate()">
+        <ng-container *ngFor="let role of roleType">
+          <option [value]="role">
+            {{role}}
+          </option>
+        </ng-container>
+      </select>
+    </div>
+    <div class="pull-right">
+      <div class="mx-2">
+        <a class="btn btn-sm bg-common text-white" href="javascript:;" (click)="compare();modalReviewRef.hide()">
+          <i class="fas fa-external-link-alt"></i>
+        </a>
+      </div>
+    </div>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalReviewRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="col-12 mt-2" *ngIf="_isTemplateAvailable">
+      <accordion [closeOthers]="true">
+        <accordion-group *ngFor="let create of createReviewList; let idx = index" [heading]="create.title"
+          [isOpen]="idx==0" (isOpenChange)="log(true)">
+          <div *ngIf="(!create?.rejected) && (reviewId==3)" class="pull-right" accordion-heading>
+            <p id="weight" class="pl-1 pull-right">{{weightage[idx]?.value}}</p>
+            <label for="weight" class="font-weight-bold pull-right">Weightage : </label>
+          </div>
+          <section id="contact-list">
+            <div *ngFor="let cat of otherForm.categoryRequests; let i=index">
+              <ul class="list-group mt-1" *ngIf="idx==i">
+                <li class="list-group-item bg-light">
+                  <p>
+                    <span class="font-weight-bold text-viewall">Key Performance Indicators</span>
+                    <span *ngIf="cat.weightageAgainstKRA">
+                      <span class="pull-right">
+                        <div [ngSwitch]="selectedRole">
+                          <input *ngSwitchCase="'Reviewee'" type="text"
+                            class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                            [attr.disabled]="true" placeholder="KRA Weightage" [ngModel]="cat.textRequest.employee"
+                            id="weight-{{i}}" />
+                          <input *ngSwitchCase="'Reviewer'" type="text"
+                            class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                            [attr.disabled]="true" placeholder="KRA Weightage" [ngModel]="cat.textRequest.level1"
+                            id="weight-{{i}}" />
+                          <input *ngSwitchCase="'Appraiser I'" type="text"
+                            class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                            [attr.disabled]="true" placeholder="KRA Weightage" [ngModel]="cat.textRequest.level2"
+                            id="weight-{{i}}" />
+                          <input *ngSwitchCase="'Appraiser II'" type="text"
+                            class="form-control form-control-sm quantity pull-right mx-3" style="width:150px"
+                            [attr.disabled]="true" placeholder="KRA Weightage" [ngModel]="cat.textRequest.level3"
+                            id="weight-{{i}}" />
+                        </div>
+                      </span>
+                      <span class="font-weight-bold text-viewall pull-right"><label>KRA Weightage : </label></span>
+                    </span>
+                  </p>
+                  <div class="card p-0">
+                    <div class="card-body">
+                      <div *ngFor="let sub of cat.subCategoryRequests; let s=index" class="mt-2">
+                        <div *ngIf="(sub.type | lowercase) != 'table'">
+                          <div class="form-group row">
+                            <div class="col-md-3 font-weight-bold"
+                              [ngClass]="{'col-md-6 font-weight-bold': reviewId!=3}">
+                              <p>{{ sub.name }}
+                                <i *ngIf="sub.description && sub.description!=''" class="fas fa-info-circle" triggers=""
+                                  #pop="bs-popover" [popover]="sub.description" popoverTitle="Description"
+                                  [outsideClick]="true" containerClass="customClass" (click)="open(pop)"
+                                  placement="right"></i>
+                              </p>
+                            </div>
+                            <div class="col-md-3" *ngIf="reviewId==3">
+                              <p>{{sub.goal}}</p>
+                            </div>
+                            <div class="col-md-6">
+                              <div *ngIf="(sub.type | lowercase) == 'text'">
+                                <div [ngSwitch]="selectedRole">
+                                  <input *ngSwitchCase="'Reviewee'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}" [ngModel]="sub.textRequest.employee"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Reviewer'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}" [ngModel]="sub.textRequest.level1"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser I'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}" [ngModel]="sub.textRequest.level2"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser II'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}" [ngModel]="sub.textRequest.level3"
+                                    [attr.disabled]="true" />
+                                </div>
+
+                              </div>
+                              <div
+                                *ngIf="(sub.type | lowercase) == 'textarea' || (sub.type | lowercase) == 'text area'">
+                                <div [ngSwitch]="selectedRole">
+                                  <textarea *ngSwitchCase="'Reviewee'" class="form-control form-control-sm" id="txtArea"
+                                    rows="5" cols="50" [ngModel]="sub.textAreaRequest.employee"
+                                    [attr.disabled]="true"></textarea>
+                                  <textarea *ngSwitchCase="'Reviewer'" class="form-control form-control-sm" id="txtArea"
+                                    rows="5" cols="50" [ngModel]="sub.textAreaRequest.level1"
+                                    [attr.disabled]="true"></textarea>
+                                  <textarea *ngSwitchCase="'Appraiser I'" class="form-control form-control-sm"
+                                    id="txtArea" rows="5" cols="50" [ngModel]="sub.textAreaRequest.level2"
+                                    [attr.disabled]="true"></textarea>
+                                  <textarea *ngSwitchCase="'Appraiser II'" class="form-control form-control-sm"
+                                    id="txtArea" rows="5" cols="50" [ngModel]="sub.textAreaRequest.level3"
+                                    [attr.disabled]="true"></textarea>
+                                </div>
+                              </div>
+                              <div *ngIf="(sub.type | lowercase) == 'date'">
+                                <div [ngSwitch]="selectedRole">
+                                  <input *ngSwitchCase="'Reviewee'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}"
+                                    [ngModel]="sub.dateRequest.employee| date:'dd-MMM-yyyy'" [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Reviewer'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}"
+                                    [ngModel]="sub.dateRequest.level1 | date:'dd-MMM-yyyy'" [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser I'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}"
+                                    [ngModel]="sub.dateRequest.level2 | date:'dd-MMM-yyyy'" [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser II'" type="text" class="form-control form-control-sm"
+                                    id="text-{{i}}-{{s}}" name="text-{{i}}-{{s}}"
+                                    [ngModel]="sub.dateRequest.level3 | date:'dd-MMM-yyyy'" [attr.disabled]="true" />
+                                </div>
+                              </div>
+                              <div *ngIf="(sub.type | lowercase) == 'dropdown'">
+                                <div [ngSwitch]="selectedRole">
+                                  <input *ngSwitchCase="'Reviewee'" type="text" class="form-control form-control-sm"
+                                    id="drop-{{i}}-{{s}}" name="drop-{{i}}-{{s}}"
+                                    [ngModel]="sub.dropDownRequest.dropDownSelectedRequest.employee"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Reviewer'" type="text" class="form-control form-control-sm"
+                                    id="drop-{{i}}-{{s}}" name="drop-{{i}}-{{s}}"
+                                    [ngModel]="sub.dropDownRequest.dropDownSelectedRequest.level1"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser I'" type="text" class="form-control form-control-sm"
+                                    id="drop-{{i}}-{{s}}" name="drop-{{i}}-{{s}}"
+                                    [ngModel]="sub.dropDownRequest.dropDownSelectedRequest.level2"
+                                    [attr.disabled]="true" />
+                                  <input *ngSwitchCase="'Appraiser II'" type="text" class="form-control form-control-sm"
+                                    id="drop-{{i}}-{{s}}" name="drop-{{i}}-{{s}}"
+                                    [ngModel]="sub.dropDownRequest.dropDownSelectedRequest.level3"
+                                    [attr.disabled]="true" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div *ngIf="(sub.type | lowercase) == 'table'">
+                          <div class="form-group row">
+                            <div class="col-md-4 font-weight-bold"
+                              [ngClass]="{'col-md-8 font-weight-bold':reviewId!=3}">
+                              <p>{{ sub.name }}
+                                <i *ngIf="sub.description && sub.description!=''" class="fas fa-info-circle" triggers=""
+                                  #pop="bs-popover" [popover]="sub.description" popoverTitle="Description"
+                                  [outsideClick]="true" containerClass="customClass" (click)="open(pop)"
+                                  placement="right"></i>
+                              </p>
+                            </div>
+                            <div class="col-md-8" *ngIf="reviewId==3">
+                              <p>{{sub.goal}}</p>
+                            </div>
+                          </div>
+                          <div class="form-group row">
+                            <div class="col-md-12">
+                              <div *ngIf="(sub.type | lowercase) == 'table'">
+                                <div class="container-fluid px-0">
+                                  <div id="table" class="table-responsive">
+                                    <table class="table table-stripped table-bordered">
+                                      <thead>
+                                        <th
+                                          *ngFor="let row of getTableColumns(cat.weightageAgainstKRA,sub.tableRequest); let id = index">
+                                          <span class="font-italic" [tooltip]="row.description"
+                                            trigger="hover">{{row.columnName}}</span>
+                                        </th>
+                                      </thead>
+                                      <ng-container
+                                        *ngFor="let rows of sub.tableRequest.tableValueListRequests; let rIdx = index; trackBy: trackByFnRows">
+                                        <tr>
+                                          <td class="mw-25"
+                                            *ngFor="let values of getTableValueRequests(cat.weightageAgainstKRA,rows); let vIdx = index; trackBy: trackByFnCols">
+                                            <span *ngIf="(values.type | lowercase)=='text'">
+                                              <div [ngSwitch]="selectedRole">
+                                                <input *ngSwitchCase="'Reviewee'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}" [ngModel]="values.textRequest.employee"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Reviewer'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}" [ngModel]="values.textRequest.level1"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser I'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}" [ngModel]="values.textRequest.level2"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser II'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}" [ngModel]="values.textRequest.level3"
+                                                  [attr.disabled]="true" />
+                                              </div>
+                                            </span>
+                                            <span *ngIf="(values.type | lowercase)=='textarea'">
+                                              <div [ngSwitch]="selectedRole">
+                                                <textarea *ngSwitchCase="'Reviewee'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}" rows="5"
+                                                  cols="50" name="text-{{i}}-{{s}}"
+                                                  [ngModel]="values.textAreaRequest.employee"
+                                                  [attr.disabled]="true"> </textarea>
+                                                <textarea *ngSwitchCase="'Reviewer'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}" rows="5"
+                                                  cols="50" name="text-{{i}}-{{s}}"
+                                                  [ngModel]="values.textAreaRequest.level1"
+                                                  [attr.disabled]="true"> </textarea>
+                                                <textarea *ngSwitchCase="'Appraiser I'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}" rows="5"
+                                                  cols="50" name="text-{{i}}-{{s}}"
+                                                  [ngModel]="values.textAreaRequest.level2"
+                                                  [attr.disabled]="true"> </textarea>
+                                                <textarea *ngSwitchCase="'Appraiser II'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}" rows="5"
+                                                  cols="50" name="text-{{i}}-{{s}}"
+                                                  [ngModel]="values.textAreaRequest.level3"
+                                                  [attr.disabled]="true"> </textarea>
+                                              </div>
+                                            </span>
+                                            <span *ngIf="(values.type | lowercase) == 'dropdown'">
+                                              <div [ngSwitch]="selectedRole">
+                                                <input *ngSwitchCase="'Reviewee'" type="text"
+                                                  class="form-control form-control-sm" id="tdrop-{{i}}-{{s}}"
+                                                  name="tdrop-{{i}}-{{s}}"
+                                                  [ngModel]="values.dropDownSelectedRequest.employee"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Reviewer'" type="text"
+                                                  class="form-control form-control-sm" id="tdrop-{{i}}-{{s}}"
+                                                  name="tdrop-{{i}}-{{s}}"
+                                                  [ngModel]="values.dropDownSelectedRequest.level1"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser I'" type="text"
+                                                  class="form-control form-control-sm" id="tdrop-{{i}}-{{s}}"
+                                                  name="tdrop-{{i}}-{{s}}"
+                                                  [ngModel]="values.dropDownSelectedRequest.level2"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser II'" type="text"
+                                                  class="form-control form-control-sm" id="tdrop-{{i}}-{{s}}"
+                                                  name="tdrop-{{i}}-{{s}}"
+                                                  [ngModel]="values.dropDownSelectedRequest.level3"
+                                                  [attr.disabled]="true" />
+                                              </div>
+                                            </span>
+                                            <span *ngIf="(values.type | lowercase)=='date'">
+                                              <div [ngSwitch]="selectedRole">
+                                                <input *ngSwitchCase="'Reviewee'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}"
+                                                  [ngModel]="values.dateRequest.employee | date:'dd-MMM-yyyy'"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Reviewer'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}"
+                                                  [ngModel]="values.dateRequest.level1 | date:'dd-MMM-yyyy'"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser I'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}"
+                                                  [ngModel]="values.dateRequest.level2 | date:'dd-MMM-yyyy'"
+                                                  [attr.disabled]="true" />
+                                                <input *ngSwitchCase="'Appraiser II'" type="text"
+                                                  class="form-control form-control-sm" id="text-{{i}}-{{s}}"
+                                                  name="text-{{i}}-{{s}}"
+                                                  [ngModel]="values.dateRequest.level3 | date:'dd-MMM-yyyy'"
+                                                  [attr.disabled]="true" />
+                                              </div>
+                                            </span>
+                                          </td>
+                                        </tr>
+                                      </ng-container>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </accordion-group>
+      </accordion>
+
+      <div class="my-2" *ngIf="(reviewId==3) || (reviewId==1)">
+        <div [ngSwitch]="selectedRole" *ngIf="reviewRate">
+          <p><b>Rating : </b>{{reviewRateValue}} - <span> <b>
+                <span *ngIf="reviewRate=='Outstanding'" class="text-success">{{reviewRate}}</span>
+                <span *ngIf="reviewRate=='Exceed Expectations'" class="text-primary">{{reviewRate}}</span>
+                <span *ngIf="reviewRate=='Meets Expectations'" class="text-warning">{{reviewRate}}</span>
+                <span *ngIf="reviewRate=='Below Expectations'" class="text-danger">{{reviewRate}}</span>
+              </b></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-0" *ngIf="!_isTemplateAvailable">
+    <div class="col-12 justify-content-center">
+      <div class="alert alert-common" role="alert">
+        Something went wrong. Please Try again.
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+
+<ng-template #weight>
+  <div class="modal-header">
+    <h5 class="modal-title font-weight-bold pull-left">Weightage</h5>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="weightageRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <!-- <p class="font-weight-bold">Note: </p> -->
+    <div class="row justify-content-center mx-4">
+      <p>
+        Weightage for indivudual KPI's should not exceed the overall weightage.
+      </p>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #current>
+  <div class="modal-header">
+    <h5 class="modal-title pull-left">Confirm ?</h5>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="currentRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <ng-container *ngIf="rate else wrong">
+      <p>Overall Rating is {{rateValue}} - <span> <b>
+            <span *ngIf="rate=='Outstanding'" class="text-success">{{rate}}</span>
+            <span *ngIf="rate=='Exceed Expectations'" class="text-primary">{{rate}}</span>
+            <span *ngIf="rate=='Meets Expectations'" class="text-warning">{{rate}}</span>
+            <span *ngIf="rate=='Below Expectations'" class="text-danger">{{rate}}</span>
+          </b></span></p>
+      <button type="button" class="btn bg-common text-white mx-1" (click)="confirmReview()">Yes</button>
+      <button type="button" class="btn bg-mehh text-white mx-1" (click)="declineReview()">No</button>
+    </ng-container>
+    <ng-template #wrong>
+      <span class="text-danger">Something Went Wrong</span>
+    </ng-template>
+  </div>
+</ng-template>

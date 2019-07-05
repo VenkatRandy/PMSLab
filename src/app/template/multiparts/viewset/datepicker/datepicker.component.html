@@ -1,0 +1,68 @@
+<div *ngIf="type=='outsideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <!-- <div formGroupName="dateRequest"> -->
+
+            <div class="input-group">
+              <input type="text" readonly autocomplete="off" bsDatepicker class="form-control form-control-sm" id="date"
+                name="date" #prd="bsDatepicker" placeholder="DD-MM-YYYY"
+                [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY', containerClass: 'theme-dark-blue',showWeekNumbers:false }"
+                [isDisabled]="true" />
+              <div class="input-group-append">
+                <div (click)="prd.toggle()" class="input-group-text text-white bg-common">
+                  <i class="far fa-calendar-alt"></i>
+                </div>
+              </div>
+            </div>
+            <!-- <input type="text" class="form-control form-control-sm" id="manufacturer1" name="text1"
+                formControlName="level1" /> -->
+            <!-- </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="type=='insideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="tableRequest">
+              <div formArrayName="tableValueListRequests">
+                <div [formGroupName]="rIndex">
+                  <div formArrayName="tableValueRequests">
+                    <div [formGroupName]="vIndex">
+
+                      <div class="input-group">
+                        <input type="text" readonly autocomplete="off" bsDatepicker class="form-control form-control-sm"
+                          id="date" name="date" #prd="bsDatepicker" placeholder="DD-MM-YYYY"
+                          [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY', containerClass: 'theme-dark-blue',showWeekNumbers:false }"
+                          [isDisabled]="true" />
+                        <div class="input-group-append">
+                          <div (click)="prd.toggle()" class="input-group-text text-white bg-common">
+                            <i class="far fa-calendar-alt"></i>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- <div formGroupName="dateRequest">
+                        <input type="text" class="form-control form-control-sm" id="{{rIndex}}-{{vIndex}}"
+                          name="{{rIndex}}-{{vIndex}}" formControlName="level1" />
+                      </div> -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

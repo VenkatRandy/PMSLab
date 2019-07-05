@@ -1,0 +1,208 @@
+<div *ngIf="type=='outsideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="dateRequest">
+              <div [ngSwitch]="level">
+                <div class="input-group" *ngSwitchCase="'Reviewee'">
+                  <input type="text" readonly autocomplete="off" bsDatepicker class="form-control form-control-sm"
+                    id="date" [ngClass]="{ 'is-invalid': _isSubmitted && dateRequestOutside.get('employee').errors}"
+                    name="date" #dtOS="bsDatepicker" placeholder="DD-MMM-YYYY"
+                    (bsValueChange)="valueChangedOutside($event)" [bsValue]="employeeDate"
+                    value="{{employeeDate | date:'dd-MMM-yyyy'}}"
+                    [bsConfig]="{ dateInputFormat: 'DD-MMM-YYYY', containerClass: 'theme-dark-blue',showWeekNumbers:false }"
+                    [isDisabled]="_isDisabled" />
+                  <div class="input-group-append">
+                    <div (click)="dtOS.toggle()" class="input-group-text text-white bg-common">
+                      <i class="far fa-calendar-alt"></i>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="_isSubmitted && dateRequestOutside.get('employee').errors" class="text-danger">
+                  <div *ngIf="dateRequestOutside.get('employee').errors.required">
+                    Required Field
+                  </div>
+                </div>
+                <div class="input-group" *ngSwitchCase="'Reviewer'">
+                  <input type="text" readonly autocomplete="off" bsDatepicker class="form-control form-control-sm"
+                    id="date" [ngClass]="{ 'is-invalid': _isSubmitted && dateRequestOutside.get('level1').errors}"
+                    name="date" #dtO1="bsDatepicker" placeholder="DD-MMM-YYYY"
+                    (bsValueChange)="valueChangedOutside($event)" [bsValue]="level1Date"
+                    value="{{level1Date | date:'dd-MMM-yyyy'}}"
+                    [bsConfig]="{ dateInputFormat: 'DD-MMM-YYYY', containerClass: 'theme-dark-blue',showWeekNumbers:false }"
+                    [isDisabled]="_isDisabled" />
+                  <div class="input-group-append">
+                    <div (click)="dtO1.toggle()" class="input-group-text text-white bg-common">
+                      <i class="far fa-calendar-alt"></i>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="_isSubmitted && dateRequestOutside.get('level1').errors" class="text-danger">
+                  <div *ngIf="dateRequestOutside.get('level1').errors.required">
+                    Required Field
+                  </div>
+                </div>
+
+                <div class="input-group" *ngSwitchCase="'Appraiser I'">
+                  <input type="text" readonly autocomplete="off" bsDatepicker class="form-control form-control-sm"
+                    id="date" [ngClass]="{ 'is-invalid': _isSubmitted && dateRequestOutside.get('level2').errors}"
+                    name="date" #dtO2="bsDatepicker" placeholder="DD-MMM-YYYY"
+                    (bsValueChange)="valueChangedOutside($event)" [bsValue]="level2Date"
+                    value="{{level2Date | date:'dd-MMM-yyyy'}}"
+                    [bsConfig]="{ dateInputFormat: 'DD-MMM-YYYY', containerClass: 'theme-dark-blue',showWeekNumbers:false }"
+                    [isDisabled]="_isDisabled" />
+                  <div class="input-group-append">
+                    <div (click)="dtO2.toggle()" class="input-group-text text-white bg-common">
+                      <i class="far fa-calendar-alt"></i>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="_isSubmitted && dateRequestOutside.get('level2').errors" class="text-danger">
+                  <div *ngIf="dateRequestOutside.get('level2').errors.required">
+                    Required Field
+                  </div>
+                </div>
+
+                <div class="input-group" *ngSwitchCase="'Appraiser II'">
+                  <input type="text" readonly autocomplete="off" bsDatepicker class="form-control form-control-sm"
+                    id="date" [ngClass]="{ 'is-invalid': _isSubmitted && dateRequestOutside.get('level3').errors}"
+                    name="date" #dtO3="bsDatepicker" placeholder="DD-MMM-YYYY"
+                    (bsValueChange)="valueChangedOutside($event)" [bsValue]="level3Date"
+                    value="{{level3Date | date:'dd-MMM-yyyy'}}"
+                    [bsConfig]="{ dateInputFormat: 'DD-MMM-YYYY', containerClass: 'theme-dark-blue',showWeekNumbers:false }"
+                    [isDisabled]="_isDisabled" />
+                  <div class="input-group-append">
+                    <div (click)="dtO3.toggle()" class="input-group-text text-white bg-common">
+                      <i class="far fa-calendar-alt"></i>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="_isSubmitted && dateRequestOutside.get('level3').errors" class="text-danger">
+                  <div *ngIf="dateRequestOutside.get('level3').errors.required">
+                    Required Field
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="type=='insideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="tableRequest">
+              <div formArrayName="tableValueListRequests">
+                <div [formGroupName]="rIndex">
+                  <div formArrayName="tableValueRequests">
+                    <div [formGroupName]="vIndex">
+                      <div formGroupName="dateRequest">
+                        <div [ngSwitch]="level">
+                          <div class="input-group" *ngSwitchCase="'Reviewee'">
+                            <input type="text" readonly autocomplete="off" bsDatepicker
+                              class="form-control form-control-sm" id="date-{{iIndex}}-{{sIndex}}"
+                              name="date-{{iIndex}}-{{sIndex}}" [bsValue]="employeeDateIn"
+                              value="{{employeeDateIn | date:'dd-MMM-yyyy'}}"
+                              [ngClass]="{ 'is-invalid': _isSubmitted && dateRequestInside.get('employee').errors}"
+                              #dtIS="bsDatepicker" placeholder="DD-MMM-YYYY"
+                              (bsValueChange)="valueChangedInside($event)"
+                              [bsConfig]="{ dateInputFormat: 'DD-MMM-YYYY', containerClass: 'theme-dark-blue',showWeekNumbers:false }"
+                              [isDisabled]="_isDisabled" />
+                            <div class="input-group-append">
+                              <div (click)="dtIS.toggle()" class="input-group-text text-white bg-common">
+                                <i class="far fa-calendar-alt"></i>
+                              </div>
+                            </div>
+                          </div>
+                          <div *ngIf="_isSubmitted && dateRequestInside.get('employee').errors" class="text-danger">
+                            <div *ngIf="dateRequestInside.get('employee').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+
+                          <div class="input-group" *ngSwitchCase="'Reviewer'">
+                            <input type="text" readonly autocomplete="off" bsDatepicker
+                              class="form-control form-control-sm" id="date-{{iIndex}}-{{sIndex}}"
+                              name="date-{{iIndex}}-{{sIndex}}" [bsValue]="level1DateIn"
+                              value="{{level1DateIn | date:'dd-MMM-yyyy'}}"
+                              [ngClass]="{ 'is-invalid': _isSubmitted && dateRequestInside.get('level1').errors}"
+                              #dtIS1="bsDatepicker" placeholder="DD-MMM-YYYY"
+                              (bsValueChange)="valueChangedInside($event)"
+                              [bsConfig]="{ dateInputFormat: 'DD-MMM-YYYY', containerClass: 'theme-dark-blue',showWeekNumbers:false }"
+                              [isDisabled]="_isDisabled" />
+                            <div class="input-group-append">
+                              <div (click)="dtIS1.toggle()" class="input-group-text text-white bg-common">
+                                <i class="far fa-calendar-alt"></i>
+                              </div>
+                            </div>
+                          </div>
+                          <div *ngIf="_isSubmitted && dateRequestInside.get('level1').errors" class="text-danger">
+                            <div *ngIf="dateRequestInside.get('level1').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+
+                          <div class="input-group" *ngSwitchCase="'Appraiser I'">
+                            <input type="text" readonly autocomplete="off" bsDatepicker
+                              class="form-control form-control-sm" id="date-{{iIndex}}-{{sIndex}}"
+                              name="date-{{iIndex}}-{{sIndex}}" [bsValue]="level2DateIn"
+                              value="{{level2DateIn | date:'dd-MMM-yyyy'}}"
+                              [ngClass]="{ 'is-invalid': _isSubmitted && dateRequestInside.get('level2').errors}"
+                              #dtIS2="bsDatepicker" placeholder="DD-MMM-YYYY"
+                              (bsValueChange)="valueChangedInside($event)"
+                              [bsConfig]="{ dateInputFormat: 'DD-MMM-YYYY', containerClass: 'theme-dark-blue',showWeekNumbers:false }"
+                              [isDisabled]="_isDisabled" />
+                            <div class="input-group-append">
+                              <div (click)="dtIS2.toggle()" class="input-group-text text-white bg-common">
+                                <i class="far fa-calendar-alt"></i>
+                              </div>
+                            </div>
+                          </div>
+                          <div *ngIf="_isSubmitted && dateRequestInside.get('level2').errors" class="text-danger">
+                            <div *ngIf="dateRequestInside.get('level2').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+
+                          <div class="input-group" *ngSwitchCase="'Appraiser II'">
+                            <input type="text" readonly autocomplete="off" bsDatepicker
+                              class="form-control form-control-sm" id="date-{{iIndex}}-{{sIndex}}"
+                              name="date-{{iIndex}}-{{sIndex}}" [bsValue]="level3DateIn"
+                              value="{{level3DateIn | date:'dd-MMM-yyyy'}}"
+                              [ngClass]="{ 'is-invalid': _isSubmitted && dateRequestInside.get('level3').errors}"
+                              #dtIS3="bsDatepicker" placeholder="DD-MMM-YYYY"
+                              (bsValueChange)="valueChangedInside($event)"
+                              [bsConfig]="{ dateInputFormat: 'DD-MMM-YYYY', containerClass: 'theme-dark-blue',showWeekNumbers:false }"
+                              [isDisabled]="_isDisabled" />
+                            <div class="input-group-append">
+                              <div (click)="dtIS3.toggle()" class="input-group-text text-white bg-common">
+                                <i class="far fa-calendar-alt"></i>
+                              </div>
+                            </div>
+                          </div>
+                          <div *ngIf="_isSubmitted && dateRequestInside.get('level3').errors" class="text-danger">
+                            <div *ngIf="dateRequestInside.get('level3').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

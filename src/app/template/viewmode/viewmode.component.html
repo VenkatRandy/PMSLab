@@ -1,0 +1,16 @@
+<div class="row mt-1 mx-0" *ngIf="_isTemplateAvailable">
+  <div class="col-12">
+    <accordion [closeOthers]="true">
+      <accordion-group *ngFor="let create of createList; let idx = index" [heading]="create.title" [isOpen]="idx==0" (isOpenChange)="log($event)">
+        <app-view-subcategory [form]="form" [index]="idx" [mode]="mode" [reviewId]="reviewId"></app-view-subcategory>
+      </accordion-group>
+    </accordion>
+  </div>
+  <!-- <pre class="mb-5"> {{this.form.value | json}} </pre> -->
+</div>
+
+<div class="row justify-content-center mt-5" *ngIf="!_isTemplateAvailable">
+  <div class="alert alert-info" role="alert">
+    Something went wrong. Please Try again.
+  </div>
+</div>

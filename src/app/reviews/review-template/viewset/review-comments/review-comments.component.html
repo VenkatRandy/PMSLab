@@ -1,0 +1,38 @@
+<div [ngSwitch]="level">
+  <textarea *ngSwitchCase="'Reviewee'" class="form-control form-control-sm" [attr.disabled]="disabled"
+    [ngClass]="{ 'is-invalid': _isSubmitted && (comments=='' || comments==undefined)}"
+    id="textarea-{{iIndex}}-{{sIndex}}" name="textarea-{{iIndex}}-{{sIndex}}" rows="5" cols="50"
+    [(ngModel)]='comments'></textarea>
+  <div *ngIf="(level=='Reviewee') && _isSubmitted && (comments=='' || comments==undefined)" class="text-danger">
+    <div *ngIf="(comments=='' || comments==undefined)">
+      Required Field
+    </div>
+  </div>
+  <textarea *ngSwitchCase="'Reviewer'" class="form-control form-control-sm" [attr.disabled]="disabled"
+    [ngClass]="{ 'is-invalid': _isSubmitted && (comments=='' || comments==undefined)}"
+    id="textarea-{{iIndex}}-{{sIndex}}" name="textarea-{{iIndex}}-{{sIndex}}" rows="5" cols="50"
+    [(ngModel)]='comments'></textarea>
+  <div *ngIf="(level=='Reviewer') && _isSubmitted && (comments=='' || comments==undefined)" class="text-danger">
+    <div *ngIf="(comments=='' || comments==undefined)">
+      Required Field
+    </div>
+  </div>
+  <textarea *ngSwitchCase="'Appraiser I'" class="form-control form-control-sm" [attr.disabled]="disabled"
+    [ngClass]="{ 'is-invalid': _isSubmitted && (comments=='' || comments==undefined)}"
+    id="textarea-{{iIndex}}-{{sIndex}}" name="textarea-{{iIndex}}-{{sIndex}}" rows="5" cols="50"
+    [(ngModel)]='comments'></textarea>
+  <div *ngIf="(level=='Appraiser I') && _isSubmitted && (comments=='' || comments==undefined)" class="text-danger">
+    <div *ngIf="(comments=='' || comments==undefined)">
+      Required Field
+    </div>
+  </div>
+  <textarea *ngSwitchCase="'Appraiser II'" class="form-control form-control-sm" [attr.disabled]="disabled"
+    [ngClass]="{ 'is-invalid': _isSubmitted && (comments=='' || comments==undefined)}"
+    id="textarea-{{iIndex}}-{{sIndex}}" name="textarea-{{iIndex}}-{{sIndex}}" rows="5" cols="50"
+    [(ngModel)]='comments'></textarea>
+  <div *ngIf="(level=='Appraiser II') && _isSubmitted && (comments=='' || comments==undefined)" class="text-danger">
+    <div *ngIf="(comments=='' || comments==undefined)">
+      Required Field
+    </div>
+  </div>
+</div>

@@ -1,0 +1,49 @@
+<div class="container-fluid px-0">
+  <div id="table" class="table-responsive">
+    <table class="table table-stripped table-bordered">
+      <thead>
+        <th *ngFor="let row of tableColumns(); let id = index;trackBy:trackByHeaderFn"><span class="font-weight-bold"
+            [tooltip]="row.description" trigger="hover">{{row.columnName}}</span>
+        </th>
+        <!-- <th *ngIf="((mode | lowercase) != 'viewmode')"><span class="font-italic" tooltip="Add or Remove Row"
+            trigger="hover">Add /
+            Remove</span></th> -->
+      </thead>
+      <ng-container *ngFor="let rows of tableRows(); let rIdx = index; trackBy: trackByFnRows">
+        <tr>
+          <td class="mw-25" *ngFor="let values of rows.tableValueRequests; let vIdx = index; trackBy: trackByFnCols">
+            <span *ngIf="(values.type | lowercase)=='text'">
+              <app-textbox [form]="form" [iIndex]="iIndex" [sIndex]="sIndex" [rIndex]="rIdx" [vIndex]="vIdx"
+                [type]="_insideTable">
+              </app-textbox>
+            </span>
+            <span *ngIf="(values.type | lowercase)=='textarea'">
+              <app-textarea [form]="form" [iIndex]="iIndex" [sIndex]="sIndex" [rIndex]="rIdx" [vIndex]="vIdx"
+                [type]="_insideTable">
+              </app-textarea>
+            </span>
+            <span *ngIf="(values.type | lowercase)=='date' || (values.type | lowercase)=='datepicker'">
+              <app-datepicker [form]="form" [iIndex]="iIndex" [sIndex]="sIndex" [rIndex]="rIdx" [vIndex]="vIdx"
+                [type]="_insideTable">
+              </app-datepicker>
+            </span>
+            <span *ngIf="(values.type | lowercase) == 'dropdown'">
+              <app-dropdown [form]="form" [iIndex]="iIndex" [sIndex]="sIndex" [rIndex]="rIdx" [vIndex]="vIdx"
+                [type]="_insideTable" [values]="values.dropDownDefaultRequests"></app-dropdown>
+            </span>
+          </td>
+          <!-- <td *ngIf="((mode | lowercase) != 'viewmode')">
+            <button *ngIf="tableRows().length-1 == rIdx" type="button" class="btn btn-sm bg-primary text-white m-1"
+              (click)="addRow()">
+              <i class="fas fa-plus"></i>
+            </button>
+            <button type="button" class="btn btn-sm bg-danger text-white m-1" (click)="removeRow(rIdx)"
+              [disabled]="(tableRows().length==1)">
+              <i class="fas fa-times"></i>
+            </button>
+          </td> -->
+        </tr>
+      </ng-container>
+    </table>
+  </div>
+</div>

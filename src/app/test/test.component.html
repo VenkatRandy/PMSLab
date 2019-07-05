@@ -1,0 +1,16 @@
+<!-- <div class="row mt-5 mx-0">
+  <div class="col-12">
+    <accordion [closeOthers]="true">
+      <accordion-group *ngFor="let create of createList; let idx = index" [heading]="create.title" [isOpen]="idx==0">
+        <app-view-subcategory [form]="form" [index]="idx"></app-view-subcategory>
+      </accordion-group>
+
+      <div *ngIf="formLength != 0">
+        <button type="submit" class="btn btn-brand text-white pull-right my-5" (click)="onSubmit()" tooltip="Save"
+          trigger="hover" [disabled]="submitted">Save</button>
+      </div>
+    </accordion>
+  </div>
+
+  <pre class="mb-5"> {{this.form.value | json}} </pre>
+</div> -->

@@ -1,0 +1,115 @@
+<div *ngIf="type=='outsideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="textAreaRequest">
+              <div [ngSwitch]="level">
+                <textarea *ngSwitchCase="'Reviewee'" class="form-control form-control-sm"
+                  [ngClass]="{ 'is-invalid': _isSubmitted && textareaRequestOut.get('employee').errors}"
+                  id="textarea-{{iIndex}}-{{sIndex}}" name="textarea-{{iIndex}}-{{sIndex}}" rows="5" cols="50"
+                  formControlName="employee" [readonly]="_isDisabled"></textarea>
+                <div *ngIf="_isSubmitted && textareaRequestOut.get('employee').errors" class="text-danger">
+                  <div *ngIf="textareaRequestOut.get('employee').errors.required">
+                    Required Field
+                  </div>
+                </div>
+                <textarea *ngSwitchCase="'Reviewer'" class="form-control form-control-sm"
+                  [ngClass]="{ 'is-invalid': _isSubmitted && textareaRequestOut.get('level1').errors}"
+                  id="textarea-{{iIndex}}-{{sIndex}}" name="textarea-{{iIndex}}-{{sIndex}}" rows="5" cols="50"
+                  formControlName="level1" [readonly]="_isDisabled"></textarea>
+                <div *ngIf="_isSubmitted && textareaRequestOut.get('level1').errors" class="text-danger">
+                  <div *ngIf="textareaRequestOut.get('level1').errors.required">
+                    Required Field
+                  </div>
+                </div>
+                <textarea *ngSwitchCase="'Appraiser I'" class="form-control form-control-sm"
+                  [ngClass]="{ 'is-invalid': _isSubmitted && textareaRequestOut.get('level2').errors}"
+                  id="textarea-{{iIndex}}-{{sIndex}}" name="textarea-{{iIndex}}-{{sIndex}}" rows="5" cols="50"
+                  formControlName="level2" [readonly]="_isDisabled"></textarea>
+                <div *ngIf="_isSubmitted && textareaRequestOut.get('level2').errors" class="text-danger">
+                  <div *ngIf="textareaRequestOut.get('level2').errors.required">
+                    Required Field
+                  </div>
+                </div>
+                <textarea *ngSwitchCase="'Appraiser II'" class="form-control form-control-sm"
+                  [ngClass]="{ 'is-invalid': _isSubmitted && textareaRequestOut.get('level3').errors}"
+                  id="textarea-{{iIndex}}-{{sIndex}}" name="textarea-{{iIndex}}-{{sIndex}}" rows="5" cols="50"
+                  formControlName="level3" [readonly]="_isDisabled"></textarea>
+                <div *ngIf="_isSubmitted && textareaRequestOut.get('level3').errors" class="text-danger">
+                  <div *ngIf="textareaRequestOut.get('level3').errors.required">
+                    Required Field
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="type=='insideTable'">
+  <div [formGroup]="form">
+    <div formArrayName="categoryRequests">
+      <div [formGroupName]="iIndex">
+        <div formArrayName="subCategoryRequests">
+          <div [formGroupName]="sIndex">
+            <div formGroupName="tableRequest">
+              <div formArrayName="tableValueListRequests">
+                <div [formGroupName]="rIndex">
+                  <div formArrayName="tableValueRequests">
+                    <div [formGroupName]="vIndex">
+                      <div formGroupName="textAreaRequest">
+                        <div [ngSwitch]="level">
+                          <textarea *ngSwitchCase="'Reviewee'" class="form-control form-control-sm"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && textareaRequestIn.get('employee').errors}"
+                            id="textarea-{{iIndex}}-{{sIndex}}" name="textarea-{{iIndex}}-{{sIndex}}" rows="5" cols="50"
+                            formControlName="employee" [readonly]="_isDisabled"></textarea>
+                          <div *ngIf="_isSubmitted && textareaRequestIn.get('employee').errors" class="text-danger">
+                            <div *ngIf="textareaRequestIn.get('employee').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                          <textarea *ngSwitchCase="'Reviewer'" class="form-control form-control-sm"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && textareaRequestIn.get('level1').errors}"
+                            id="textarea-{{iIndex}}-{{sIndex}}" name="textarea-{{iIndex}}-{{sIndex}}" rows="5" cols="50"
+                            formControlName="level1" [readonly]="_isDisabled"></textarea>
+                          <div *ngIf="_isSubmitted && textareaRequestIn.get('level1').errors" class="text-danger">
+                            <div *ngIf="textareaRequestIn.get('level1').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                          <textarea *ngSwitchCase="'Appraiser I'" class="form-control form-control-sm"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && textareaRequestIn.get('level2').errors}"
+                            id="textarea-{{iIndex}}-{{sIndex}}" name="textarea-{{iIndex}}-{{sIndex}}" rows="5" cols="50"
+                            formControlName="level2" [readonly]="_isDisabled"></textarea>
+                          <div *ngIf="_isSubmitted && textareaRequestIn.get('level2').errors" class="text-danger">
+                            <div *ngIf="textareaRequestIn.get('level2').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                          <textarea *ngSwitchCase="'Appraiser II'" class="form-control form-control-sm"
+                            [ngClass]="{ 'is-invalid': _isSubmitted && textareaRequestIn.get('level3').errors}"
+                            id="textarea-{{iIndex}}-{{sIndex}}" name="textarea-{{iIndex}}-{{sIndex}}" rows="5" cols="50"
+                            formControlName="level3" [readonly]="_isDisabled"></textarea>
+                          <div *ngIf="_isSubmitted && textareaRequestIn.get('level3').errors" class="text-danger">
+                            <div *ngIf="textareaRequestIn.get('level3').errors.required">
+                              Required Field
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

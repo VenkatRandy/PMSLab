@@ -1,0 +1,8 @@
+<tabset #staticTabs type="pills" [justified]="true" class="col-12 mt-2 mb-2">
+  <nav class="nav-justified ">
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a class="nav-item nav-link" *ngFor="let tabz of tabs;let x=index"  [ngClass]="{ 'active': show==tabz.content}"
+        (click)="onSelect($event,x,tabz.title)">{{tabz.title}}</a>
+    </div>
+  </nav>
+</tabset>

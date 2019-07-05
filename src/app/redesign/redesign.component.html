@@ -1,0 +1,216 @@
+<div class="basic-container mt-2">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <ul class="list-group mt-1">
+      <li class="list-group-item bg-light">
+        <p>
+          <span class="font-weight-bold text-common">Key Performance Areas</span>
+        </p>
+        <mat-horizontal-stepper #stepper>
+          <mat-step *ngFor="let kra of Requests; let index = index; let last = last;trackBy:trackByFnCategory">
+            <div class="pt-2">
+              <ng-template matStepLabel>{{ kra.name }}</ng-template>
+              <div class="form-group row">
+                <div class="col-md-12">
+                  <label><span class="font-weight-bold text-tealsg">KRA </span>: <span
+                      class="font-weight-bold text-teal">{{kra.name}}</span></label>
+                </div>
+                <div class="col-md-12">
+                  <label><span class="font-weight-bold">Actual Weightage</span> : {{kra.weightage}}</label>
+                </div>
+              </div>
+            </div>
+
+            <ul class="list-group mt-1">
+              <li class="list-group-item bg-light">
+                <p>
+                  <span class="font-weight-bold text-common">Key Performance Indicators</span>
+                </p>
+                <mat-horizontal-stepper #stepper2>
+                  <mat-step
+                    *ngFor="let sub of kra.subCategoryRequests; let i = index; let l = last;trackBy:trackByFnSubcategory">
+                    <div class="pt-2">
+                      <ng-template matStepLabel>{{ sub.name }}</ng-template>
+                      <div class="form-group row m-0 p-0">
+                        <div class="col-1">
+                          <label><span class="font-weight-bold text-tealsg">KPI </span></label>
+                        </div>
+                        <div class="col-11">
+                          <p>: <span class="font-weight-bold text-teal">{{sub.name}}</span></p>
+                        </div>
+                      </div>
+
+                      <div class="form-group row m-0 p-0">
+                        <div class="col-1">
+                          <label><span class="font-weight-bold">GOAL</span></label>
+                        </div>
+                        <div class="col-11">
+                          <p>: {{sub.goal}}</p>
+                        </div>
+                      </div>
+
+                      <div class="form-group row m-0 p-0">
+                        <div class="col-2">
+                          <label class="font-weight-bold">Reviewer</label>
+                        </div>
+                        <div class="col-10">
+                          <div *ngIf="(sub.type | lowercase) == 'text'">
+                            <app-review-text [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [level]="'Reviewer'" [_isDisabled]="dropType">
+                            </app-review-text>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase) == 'textarea' || (sub.type | lowercase) == 'text area'">
+                            <app-review-textarea [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [level]="'Reviewer'" [_isDisabled]="dropType">
+                            </app-review-textarea>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase) == 'date'">
+                            <app-review-date [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [level]="'Reviewer'" [_isDisabled]="dropType">
+                            </app-review-date>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase) == 'dropdown'">
+                            <app-review-dropdown [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [values]="sub.dropDownRequest" [level]="'Reviewer'" [_isDisabled]="dropType">
+                            </app-review-dropdown>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase)=='table'">
+                            <app-review-table [form]="form" [iIndex]="index" [sIndex]="i" [values]="sub.tableRequest"
+                              [level]="'Reviewer'" [_isDisabled]="dropType"
+                              [weightageAgainstKRA]="kra.weightageAgainstKRA">
+                            </app-review-table>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group row m-0 p-0">
+                        <div class="col-2">
+                          <label class="font-weight-bold">Reviewee</label>
+                        </div>
+                        <div class="col-10">
+                          <div *ngIf="(sub.type | lowercase) == 'text'">
+                            <app-review-text [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [level]="'Reviewee'" [_isDisabled]="dropType">
+                            </app-review-text>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase) == 'textarea' || (sub.type | lowercase) == 'text area'">
+                            <app-review-textarea [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [level]="'Reviewee'" [_isDisabled]="dropType">
+                            </app-review-textarea>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase) == 'date'">
+                            <app-review-date [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [level]="'Reviewee'" [_isDisabled]="dropType">
+                            </app-review-date>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase) == 'dropdown'">
+                            <app-review-dropdown [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [values]="sub.dropDownRequest" [level]="'Reviewee'" [_isDisabled]="dropType">
+                            </app-review-dropdown>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase)=='table'">
+                            <app-review-table [form]="form" [iIndex]="index" [sIndex]="i" [values]="sub.tableRequest"
+                              [level]="'Reviewee'" [_isDisabled]="dropType"
+                              [weightageAgainstKRA]="kra.weightageAgainstKRA">
+                            </app-review-table>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group row m-0 p-0">
+                        <div class="col-2">
+                          <label class="font-weight-bold">Appraiser II</label>
+                        </div>
+                        <div class="col-10">
+                          <div *ngIf="(sub.type | lowercase) == 'text'">
+                            <app-review-text [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [level]="'Appraiser II'" [_isDisabled]="dropType">
+                            </app-review-text>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase) == 'textarea' || (sub.type | lowercase) == 'text area'">
+                            <app-review-textarea [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [level]="'Appraiser II'" [_isDisabled]="dropType">
+                            </app-review-textarea>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase) == 'date'">
+                            <app-review-date [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [level]="'Appraiser II'" [_isDisabled]="dropType">
+                            </app-review-date>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase) == 'dropdown'">
+                            <app-review-dropdown [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [values]="sub.dropDownRequest" [level]="'Appraiser II'" [_isDisabled]="dropType">
+                            </app-review-dropdown>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase)=='table'">
+                            <app-review-table [form]="form" [iIndex]="index" [sIndex]="i" [values]="sub.tableRequest"
+                              [level]="'Appraiser II'" [_isDisabled]="dropType"
+                              [weightageAgainstKRA]="kra.weightageAgainstKRA">
+                            </app-review-table>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group row m-0 p-0">
+                        <div class="col-2">
+                          <label class="font-weight-bold">Appraiser I</label>
+                        </div>
+                        <div class="col-10">
+                          <div *ngIf="(sub.type | lowercase) == 'text'">
+                            <app-review-text [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [level]="'Appraiser I'" [_isDisabled]="dropType">
+                            </app-review-text>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase) == 'textarea' || (sub.type | lowercase) == 'text area'">
+                            <app-review-textarea [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [level]="'Appraiser I'" [_isDisabled]="dropType">
+                            </app-review-textarea>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase) == 'date'">
+                            <app-review-date [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [level]="'Appraiser I'" [_isDisabled]="dropType">
+                            </app-review-date>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase) == 'dropdown'">
+                            <app-review-dropdown [form]="form" [iIndex]="index" [sIndex]="i" [type]="'outsideTable'"
+                              [values]="sub.dropDownRequest" [level]="'Appraiser II'" [_isDisabled]="dropType">
+                            </app-review-dropdown>
+                          </div>
+                          <div *ngIf="(sub.type | lowercase)=='table'">
+                            <app-review-table [form]="form" [iIndex]="index" [sIndex]="i" [values]="sub.tableRequest"
+                              [level]="'Appraiser I'" [_isDisabled]="dropType"
+                              [weightageAgainstKRA]="kra.weightageAgainstKRA">
+                            </app-review-table>
+                          </div>
+                        </div>
+                      </div>
+
+
+                      <div class="pull-right my-4">
+                        <button *ngIf="i !== 0" matStepperPrevious class="btn btn-sm btn-thor mx-1" type="button"
+                          (click)="prevStep(index)">Previous KPI</button>
+                        <button *ngIf="!l" matStepperNext class="btn btn-sm btn-thor mx-1" type="button"
+                          (click)="nextStep(index)">Next
+                          KPI</button>
+                        <button class="btn btn-sm btn-thor mx-1" [disabled]="!form.valid" type="submit">Save</button>
+                      </div>
+                    </div>
+                  </mat-step>
+                </mat-horizontal-stepper>
+              </li>
+            </ul>
+
+            <div class="pull-right my-4">
+              <button *ngIf="index !== 0" matStepperPrevious class="btn btn-sm btn-thor mx-1" type="button"
+                (click)="prevStep(index)">Previous KRA</button>
+              <button *ngIf="!last" matStepperNext class="btn btn-sm btn-thor mx-1" type="button"
+                (click)="nextStep(index)">Next KRA</button>
+              <!-- <button *ngIf="last" class="btn btn-sm btn-thor mx-1" [disabled]="!form.valid" type="submit">Save</button> -->
+              <button *ngIf="last" class="btn btn-sm btn-thor mx-1" [disabled]="!form.valid"
+                type="submit">Submit</button>
+            </div>
+          </mat-step>
+        </mat-horizontal-stepper>
+      </li>
+    </ul>
+  </form>
+</div>
